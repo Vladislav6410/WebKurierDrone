@@ -7,4 +7,7 @@
 ## 📦 Установка (Manual)
 
 ### 1. Клонируйте репозиторий
-git clone https://github.com/your-org/webkurierdrone.git cd webkurierdrone
+### 1. Клонируйте репозиторий
+```
+git clone https://github.com/your-org/webkurierdrone.git
+cd webkurierdrone
