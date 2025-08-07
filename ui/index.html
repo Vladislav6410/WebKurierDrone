@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebKurierDrone Control Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Панель управления дроном</h1>
+    <div id="status">Статус: Подключение...</div>
+    <div>
+        <button onclick="sendCommand('start')">🚀 Старт</button>
+        <button onclick="sendCommand('stop')">🛑 Стоп</button>
+        <select id="languageSelect" onchange="changeLanguage()">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="pl">Polski</option>
+        </select>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
