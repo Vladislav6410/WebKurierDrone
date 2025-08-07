@@ -1,13 +1,0 @@
-docs/
-├── WebKurierDrone_Overview.pdf
-├── Architecture_Scheme.png
-├── Getting_Started.md
-├── Dev_Guide_Engineer.md
-├── Dev_Guide_Programmer.md
-└── TechSpec.md
-# Getting Started
-
-## Установка
-
-1. Клонируйте репозиторий:
-git clone https://github.com/your-team/webkurierdrone.git cd webkurierdrone
