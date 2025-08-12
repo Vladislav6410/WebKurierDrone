@@ -1,10 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Autopilot AI Info</title>
+  <meta charset="utf-8" />
+  <title>Autopilot AI — VTOL Presets & Checklist</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--bg:#0e1116;--fg:#e6e6e6;--muted:#98a2b3;--card:#171a21;--acc:#4cc9f0;--ok:#22c55e;--warn:#f59e0b;--err:#ef4444}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto}
+    header{padding:18px 20px;border-bottom:1px solid #1f2430;background:var(--card);position:sticky;top:0}
+    h1{margin:0;font-size:18px} .sub{color:var(--muted);font-size:12px}
+    main{max-width:980px;margin:20px auto;padding:0 16px}
+    .banner{border:1px solid #223047;background:#121722;padding:14px;border-radius:10px;margin-bottom:16px}
+    .badge{display:inline-block;padding:4px 8px;border-radius:20px;background:var(--warn);color:#000;font-weight:700;margin-right:8px}
+    .cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .card{background:var(--card);border:1px solid #1f2430;border-radius:12px;padding:14px}
+    .card h3{margin:0 0 8px 0;font-size:15px}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    a.btn,button.btn{appearance:none;border:1px solid #2a3242;background:#0f1420;color:var(--fg);padding:8px 10px;border-radius:10px;text-decoration:none;cursor:pointer}
+    a.btn:hover,button.btn:hover{border-color:var(--acc)}
+    code{background:#0c111b;border:1px solid #1f2430;padding:2px 6px;border-radius:6px}
+    .list li{margin:6px 0}
+    footer{margin:28px 0;color:var(--muted);font-size:12px;text-align:center}
+  </style>
 </head>
 <body>
-    <h2>Autopilot AI</h2>
-    <p>Модуль для автономного управления дроном на основе ИИ.</p>
+  <header>
+    <h1>Autopilot AI <span class="sub">VTOL (FIXAR‑class) · пресеты миссий и чек‑лист</span></h1>
+  </header>
+
+  <main>
+    <!-- Баннер с правилом высоты -->
+    <div class="banner">
+      <span class="badge">≤ 120 м AGL</span>
+      Все миссии обязаны соблюдать ограничение высоты полёта <b>не выше 120 метров</b>.
+      Валидация миссий «роняет» значения выше лимита.
+    </div>
+
+    <div class="cards">
+      <!-- Чек‑лист -->
+      <section class="card">
+        <h3>Чек‑лист</h3>
+        <p class="muted">Preflight · In‑Flight · GPS‑Denied · Landing · Postflight · Аварийные процедуры</p>
+        <div class="row">
+          <a class="btn" href="./checklist.md" target="_blank">Открыть checklist.md</a>
+        </div>
+      </section>
+
+      <!-- Документация по агенту -->
+      <section class="card">
+        <h3>Агент автопилота</h3>
+        <ul class="list">
+          <li><code>autopilot.py</code> — возможности, библиотеки, пресеты.</li>
+          <li>xGroundControl / Autopilot 2.0 — проприетарные, в код не входят.</li>
+          <li>Поддержка GPS‑Denied: IMU (basic), CV+AI/SLAM (advanced).</li>
+        </ul>
+        <div class="row">
+          <a class="btn" href="./autopilot.py" download>Скачать autopilot.py</a>
+        </div>
+      </section>
+
+      <!-- Пресеты -->
+      <section class="card">
+        <h3>Пресеты миссий (JSON)</h3>
+        <ul id="presetList" class="list"></ul>
+        <div class="row">
+          <a class="btn" href="./presets/mission_schema.json" download>Скачать схему (mission_schema.json)</a>
+        </div>
+      </section>
+
+      <!-- Валидация -->
+      <section class="card">
+        <h3>Проверка (CLI)</h3>
+        <p class="muted">Локальная проверка JSON‑миссий по схеме (потребуется <code>jsonschema</code>).</p>
+        <ul class="list">
+          <li><code>pip install -r requirements.txt</code></li>
+          <li><code>python engine/agents/autopilot_ai/presets/validator.py --preset mapping_area</code></li>
+          <li><code>python engine/agents/autopilot_ai/presets/validator.py --file path/to/mission.json</code></li>
+        </ul>
+      </section>
+    </div>
+
+    <footer>WebKurierDrone · Autopilot AI Module</footer>
+  </main>
+
+  <script>
+    // 📌 Жёсткий список, чтобы работало и на статике без API/индекса каталогов
+    const presets = [
+      { file: "mapping_area.json",        title: "Mapping — Area (Lawnmower)" },
+      { file: "corridor_inspection.json", title: "Inspection — Corridor" },
+      { file: "surveillance_patrol.json", title: "Surveillance — Waypoints + Loiter" },
+      { file: "delivery_drop.json",       title: "Delivery — Precision Drop/Land" }
+    ];
+
+    const ul = document.getElementById('presetList');
+    presets.forEach(p => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.className = 'btn';
+      a.href = `./presets/${p.file}`;
+      a.download = p.file;
+      a.textContent = `Скачать: ${p.title}`;
+      li.textContent = `${p.title} — `;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+  </script>
 </body>
 </html>
