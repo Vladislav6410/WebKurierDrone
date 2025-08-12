@@ -6,7 +6,7 @@
   "properties": {
     "name": {"type": "string"},
     "pattern": {"enum": ["lawnmower", "corridor", "waypoints_loiter", "delivery_drop"]},
-    "altitude_m": {"type": "number", "minimum": 20, "maximum": 400},
+    "altitude_m": {"type": "number", "minimum": 20, "maximum": 120},
     "altitude_mode": {"enum": ["AGL", "ASL"], "default": "AGL"},
     "speed_ms": {"type": "number", "minimum": 5, "maximum": 24},
     "terrain_follow": {"type": "boolean"},
@@ -31,8 +31,8 @@
     "transition": {
       "type": "object",
       "properties": {
-        "vtol_to_wing_alt_m": {"type": "number", "minimum": 30, "maximum": 150},
-        "wing_to_vtol_alt_m": {"type": "number", "minimum": 15, "maximum": 80}
+        "vtol_to_wing_alt_m": {"type": "number", "minimum": 30, "maximum": 120},
+        "wing_to_vtol_alt_m": {"type": "number", "minimum": 15, "maximum": 120}
       }
     },
     "failsafe": {
@@ -44,5 +44,6 @@
       }
     },
     "notes": {"type": "string"}
-  }
+  },
+  "additionalProperties": false
 }
