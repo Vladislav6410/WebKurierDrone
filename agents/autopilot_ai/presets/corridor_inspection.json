@@ -6,10 +6,10 @@
   "speed_ms": 14,
   "terrain_follow": true,
   "buffer_m": 50,
-  "camera_trigger": {"mode": "by_distance_m", "value": 25},
+  "camera_trigger": { "mode": "by_distance_m", "value": 25 },
   "sensors": ["RGB", "Thermal"],
   "geofences": ["keep-in"],
-  "transition": {"vtol_to_wing_alt_m": 70, "wing_to_vtol_alt_m": 35},
-  "failsafe": {"rc_loss": "RTH", "gps_loss": "HOLD_IMU", "low_batt": "RTH"},
-  "notes": "Коридор вдоль ЛЭП/трубопроводов/дорог; орбита над POI при тревоге."
+  "transition": { "vtol_to_wing_alt_m": 70, "wing_to_vtol_alt_m": 35 },
+  "failsafe": { "rc_loss": "RTH", "gps_loss": "HOLD_IMU", "low_batt": "RTH" },
+  "notes": "Коридор вдоль ЛЭП/трубопроводов/дорог; орбита над POI при тревоге. Соблюдать лимит высоты ≤120 м AGL."
 }
