@@ -1,0 +1,53 @@
+{
+  "name": "Aerobatics — Full Demo (Approach • Routine • VTOL Land)",
+  "pattern": "aerobatics",
+  "mode": "AEROBATICS",
+  "manual_only": true,
+  "sticks_mapping": {
+    "left_stick": ["throttle", "rudder"],
+    "right_stick": ["elevator", "aileron"]
+  },
+
+  "altitude_m": 110,
+  "altitude_mode": "AGL",
+  "speed_ms": 18,
+  "terrain_follow": false,
+
+  "sensors": [],
+  "geofences": ["keep-in"],
+  "buffer_m": 150,
+
+  "transition": {
+    "vtol_to_wing_alt_m": 70,
+    "wing_to_vtol_alt_m": 40
+  },
+
+  "failsafe": {
+    "rc_loss": "RTH",
+    "gps_loss": "HOLD_IMU",
+    "low_batt": "RTH"
+  },
+
+  "maneuvers": [
+    { "name":"chandelle",   "repetitions":1, "entry_alt_m":110, "entry_speed_ms":18, "max_bank_deg":45, "notes":"ЗАХОД: набор и выравнивание по оси шоу-линии" },
+    { "name":"wingover",    "repetitions":1, "entry_alt_m":105, "entry_speed_ms":18, "max_bank_deg":60 },
+    { "name":"lazy_eight",  "repetitions":1, "entry_alt_m":100, "entry_speed_ms":17, "max_bank_deg":45 },
+
+    { "name":"aileron_roll","repetitions":2, "entry_alt_m":95,  "entry_speed_ms":19, "roll_rate_dps":160, "notes":"РОВНАЯ бочка без просадки" },
+    { "name":"barrel_roll", "repetitions":1, "entry_alt_m":95,  "entry_speed_ms":18, "roll_rate_dps":120, "pitch_rate_dps":45 },
+    { "name":"loop",        "repetitions":1, "entry_alt_m":100, "entry_speed_ms":20, "pitch_rate_dps":80 },
+
+    { "name":"immelmann",   "repetitions":1, "entry_alt_m":95,  "entry_speed_ms":19, "roll_rate_dps":120, "pitch_rate_dps":60 },
+    { "name":"split_s",     "repetitions":1, "entry_alt_m":100, "entry_speed_ms":19, "roll_rate_dps":120, "pitch_rate_dps":60, "notes":"контроль высоты, не ниже 70 м" },
+    { "name":"cuban_eight", "repetitions":1, "entry_alt_m":100, "entry_speed_ms":20, "roll_rate_dps":110, "pitch_rate_dps":60 },
+
+    { "name":"stall_turn",  "repetitions":1, "entry_alt_m":90,  "entry_speed_ms":16, "pitch_rate_dps":90 },
+    { "name":"hammerhead",  "repetitions":1, "entry_alt_m":90,  "entry_speed_ms":16, "pitch_rate_dps":90 },
+
+    { "name":"knife_edge",  "repetitions":1, "entry_alt_m":85,  "entry_speed_ms":17, "roll_rate_dps":90,  "max_bank_deg":90, "notes":"КОНТРОЛЬ: держать курс, не уводить за границы keep-in", "enabled": true },
+
+    { "name":"aileron_roll","repetitions":1, "entry_alt_m":85,  "entry_speed_ms":18, "roll_rate_dps":160, "notes":"ЗАКЛЮЧИТЕЛЬНЫЙ ПРОХОД" }
+  ],
+
+  "notes": "Последовательность: ЗАХОД → Программа фигур → Возврат. По завершении пилот включает RTH, контроллер выполняет переход в VTOL на 40 м и авто‑посадку в зоне. Соблюдать лимит высоты ≤120 м AGL."
+}
