@@ -5,13 +5,14 @@
   <title>Autopilot AI — VTOL Presets & Checklist</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root{--bg:#0e1116;--fg:#e6e6e6;--muted:#98a2b3;--card:#171a21;--acc:#4cc9f0;--ok:#22c55e;--warn:#f59e0b;--err:#ef4444}
+    :root{--bg:#0e1116;--fg:#e6e6e6;--muted:#98a2b3;--card:#171a21;--acc:#4cc9f0;--ok:#22c55e;--warn:#f59e0b;--info:#60a5fa;--err:#ef4444}
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto}
     header{padding:18px 20px;border-bottom:1px solid #1f2430;background:var(--card);position:sticky;top:0}
     h1{margin:0;font-size:18px} .sub{color:var(--muted);font-size:12px}
     main{max-width:980px;margin:20px auto;padding:0 16px}
     .banner{border:1px solid #223047;background:#121722;padding:14px;border-radius:10px;margin-bottom:16px}
     .badge{display:inline-block;padding:4px 8px;border-radius:20px;background:var(--warn);color:#000;font-weight:700;margin-right:8px}
+    .badge-info{background:var(--info);color:#000}
     .cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
     .card{background:var(--card);border:1px solid #1f2430;border-radius:12px;padding:14px}
     .card h3{margin:0 0 8px 0;font-size:15px}
@@ -22,19 +23,26 @@
     code{background:#0c111b;border:1px solid #1f2430;padding:2px 6px;border-radius:6px}
     .list li{margin:6px 0}
     footer{margin:28px 0;color:var(--muted);font-size:12px;text-align:center}
+    .kv{display:grid;grid-template-columns:120px 1fr;gap:6px;font-size:13px}
+    .kv div:nth-child(odd){color:var(--muted)}
   </style>
 </head>
 <body>
   <header>
-    <h1>Autopilot AI <span class="sub">VTOL (FIXAR‑class) · пресеты миссий и чек‑лист</span></h1>
+    <h1>Autopilot AI <span class="sub">VTOL (FIXAR‑class) · пресеты миссий, чек‑лист, VTOL‑взлёт/посадка</span></h1>
   </header>
 
   <main>
-    <!-- Баннер с правилом высоты -->
+    <!-- Баннеры с ключевыми правилами -->
     <div class="banner">
       <span class="badge">≤ 120 м AGL</span>
       Все миссии обязаны соблюдать ограничение высоты полёта <b>не выше 120 метров</b>.
-      Валидация миссий «роняет» значения выше лимита.
+      Валидация «роняет» значения выше лимита.
+    </div>
+    <div class="banner">
+      <span class="badge badge-info">VTOL ON</span>
+      <b>Взлёт и посадка — на вертикальных моторах (VTOL)</b>. Переход в крыло и обратно задаётся полями
+      <code>transition.vtol_to_wing_alt_m</code> и <code>transition.wing_to_vtol_alt_m</code> в JSON‑миссиях.
     </div>
 
     <div class="cards">
@@ -53,7 +61,8 @@
         <ul class="list">
           <li><code>autopilot.py</code> — возможности, библиотеки, пресеты.</li>
           <li>xGroundControl / Autopilot 2.0 — проприетарные, в код не входят.</li>
-          <li>Поддержка GPS‑Denied: IMU (basic), CV+AI/SLAM (advanced).</li>
+          <li>GPS‑Denied: IMU (basic), CV+AI/SLAM (advanced).</li>
+          <li>VTOL: взлёт/посадка вертикальными моторами; переход в крыло на заданной высоте.</li>
         </ul>
         <div class="row">
           <a class="btn" href="./autopilot.py" download>Скачать autopilot.py</a>
@@ -72,12 +81,46 @@
       <!-- Валидация -->
       <section class="card">
         <h3>Проверка (CLI)</h3>
-        <p class="muted">Локальная проверка JSON‑миссий по схеме (потребуется <code>jsonschema</code>).</p>
+        <p class="muted">Локальная проверка JSON‑миссий по схеме (требуется <code>jsonschema</code>).</p>
         <ul class="list">
           <li><code>pip install -r requirements.txt</code></li>
           <li><code>python engine/agents/autopilot_ai/presets/validator.py --preset mapping_area</code></li>
           <li><code>python engine/agents/autopilot_ai/presets/validator.py --file path/to/mission.json</code></li>
+          <li><code>python engine/agents/autopilot_ai/presets/validate_all.py --fix-alt --backup</code></li>
         </ul>
+      </section>
+
+      <!-- Карточка VTOL операции -->
+      <section class="card">
+        <h3>VTOL операции (взлёт/посадка и переходы)</h3>
+        <div class="kv">
+          <div>Взлёт</div><div>Вертикальными моторами (VTOL takeoff) с площадки, учесть ветер/препятствия.</div>
+          <div>Переход в крыло</div><div><code>transition.vtol_to_wing_alt_m</code> — высота переключения в крыло.</div>
+          <div>Возврат в VTOL</div><div><code>transition.wing_to_vtol_alt_m</code> — высота обратного перехода.</div>
+          <div>Посадка</div><div>VTOL landing (precision‑land по миссии доставки; контроль зоны посадки).</div>
+        </div>
+        <p class="muted" style="margin-top:8px">
+          Все готовые пресеты ниже уже содержат поля <code>transition.*</code>.
+          В <code>Aerobatics — Full Demo</code> по завершении рутины выполняется возврат и VTOL‑посадка.
+        </p>
+      </section>
+
+      <!-- Режим «Высший пилотаж» -->
+      <section class="card">
+        <h3>Режим «Высший пилотаж»</h3>
+        <p class="muted">Manual‑only · RC‑раскладка стиков · Каталог фигур · VTOL взлёт/посадка</p>
+        <ul class="list">
+          <li><code>aerobatics_mission.json</code> — пример миссии (ручной режим)</li>
+          <li><code>aerobatics_show.json</code> — полное шоу (заход → программа → VTOL посадка)</li>
+          <li><code>aerobatics_catalog.json</code> — список фигур (enabled/disabled)</li>
+          <li><code>aerobatics.md</code> — пояснения и безопасность</li>
+        </ul>
+        <div class="row">
+          <a class="btn" href="./presets/aerobatics_mission.json" download>Скачать миссию</a>
+          <a class="btn" href="./presets/aerobatics_show.json" download>Aerobatics — Full Demo</a>
+          <a class="btn" href="./presets/aerobatics_catalog.json" download>Каталог фигур</a>
+          <a class="btn" href="./aerobatics.md" target="_blank">Открыть инструкцию</a>
+        </div>
       </section>
     </div>
 
@@ -85,12 +128,14 @@
   </main>
 
   <script>
-    // 📌 Жёсткий список, чтобы работало и на статике без API/индекса каталогов
+    // 📌 Жёсткий список, чтобы работало и на статике без индекса каталогов
     const presets = [
       { file: "mapping_area.json",        title: "Mapping — Area (Lawnmower)" },
       { file: "corridor_inspection.json", title: "Inspection — Corridor" },
       { file: "surveillance_patrol.json", title: "Surveillance — Waypoints + Loiter" },
-      { file: "delivery_drop.json",       title: "Delivery — Precision Drop/Land" }
+      { file: "delivery_drop.json",       title: "Delivery — Precision Drop/Land" },
+      { file: "aerobatics_mission.json",  title: "Aerobatics — Manual Sequence" },
+      { file: "aerobatics_show.json",     title: "Aerobatics — Full Demo" }
     ];
 
     const ul = document.getElementById('presetList');
