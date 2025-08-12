@@ -4,46 +4,62 @@
   "type": "object",
   "required": ["name", "pattern", "altitude_m", "speed_ms", "terrain_follow", "failsafe"],
   "properties": {
-    "name": {"type": "string"},
-    "pattern": {"enum": ["lawnmower", "corridor", "waypoints_loiter", "delivery_drop"]},
-    "altitude_m": {"type": "number", "minimum": 20, "maximum": 120},
-    "altitude_mode": {"enum": ["AGL", "ASL"], "default": "AGL"},
-    "speed_ms": {"type": "number", "minimum": 5, "maximum": 24},
-    "terrain_follow": {"type": "boolean"},
+    "name": { "type": "string" },
+    "pattern": { "enum": ["lawnmower", "corridor", "waypoints_loiter", "delivery_drop"] },
+    "altitude_m": { "type": "number", "minimum": 20, "maximum": 120 },
+    "altitude_mode": { "enum": ["AGL", "ASL"], "default": "AGL" },
+    "speed_ms": { "type": "number", "minimum": 5, "maximum": 24 },
+    "terrain_follow": { "type": "boolean" },
     "overlap": {
       "type": "object",
       "properties": {
-        "front": {"type": "number", "minimum": 50, "maximum": 95},
-        "side": {"type": "number", "minimum": 40, "maximum": 90}
+        "front": { "type": "number", "minimum": 50, "maximum": 95 },
+        "side": { "type": "number", "minimum": 40, "maximum": 90 }
       }
     },
     "camera_trigger": {
       "type": "object",
       "properties": {
-        "mode": {"enum": ["by_distance_m", "by_time_s"]},
-        "value": {"type": "number", "minimum": 0.3}
+        "mode": { "enum": ["by_distance_m", "by_time_s"] },
+        "value": { "type": "number", "minimum": 0.3 }
       }
     },
-    "gsd_target_cm": {"type": "number", "minimum": 0.5, "maximum": 10},
-    "sensors": {"type": "array", "items": {"enum": ["RGB", "Thermal", "LiDAR"]}},
-    "geofences": {"type": "array", "items": {"enum": ["keep-in", "no-fly"]}},
-    "buffer_m": {"type": "number", "minimum": 0, "maximum": 500},
+    "gsd_target_cm": { "type": "number", "minimum": 0.5, "maximum": 10 },
+    "sensors": { "type": "array", "items": { "enum": ["RGB", "Thermal", "LiDAR"] } },
+    "geofences": { "type": "array", "items": { "enum": ["keep-in", "no-fly"] } },
+    "buffer_m": { "type": "number", "minimum": 0, "maximum": 500 },
     "transition": {
       "type": "object",
       "properties": {
-        "vtol_to_wing_alt_m": {"type": "number", "minimum": 30, "maximum": 120},
-        "wing_to_vtol_alt_m": {"type": "number", "minimum": 15, "maximum": 120}
+        "vtol_to_wing_alt_m": { "type": "number", "minimum": 30, "maximum": 120 },
+        "wing_to_vtol_alt_m": { "type": "number", "minimum": 15, "maximum": 120 }
       }
     },
     "failsafe": {
       "type": "object",
       "properties": {
-        "rc_loss": {"enum": ["RTH", "HOLD", "LAND"]},
-        "gps_loss": {"enum": ["HOLD_IMU", "LAND"]},
-        "low_batt": {"enum": ["RTH", "LAND"]}
+        "rc_loss": { "enum": ["RTH", "HOLD", "LAND"] },
+        "gps_loss": { "enum": ["HOLD_IMU", "LAND"] },
+        "low_batt": { "enum": ["RTH", "LAND"] }
       }
     },
-    "notes": {"type": "string"}
+    "notes": { "type": "string" }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "examples": [
+    {
+      "name": "Surveillance — Waypoints + Loiter",
+      "pattern": "waypoints_loiter",
+      "altitude_m": 120,
+      "altitude_mode": "AGL",
+      "speed_ms": 15,
+      "terrain_follow": true,
+      "camera_trigger": { "mode": "by_time_s", "value": 2 },
+      "sensors": ["RGB", "Thermal"],
+      "geofences": ["keep-in", "no-fly"],
+      "transition": { "vtol_to_wing_alt_m": 60, "wing_to_vtol_alt_m": 30 },
+      "failsafe": { "rc_loss": "RTH", "gps_loss": "HOLD_IMU", "low_batt": "RTH" },
+      "notes": "Патруль по точкам; при событии — loiter/спираль, затем продолжить миссию. Соблюдать лимит высоты ≤120 м AGL."
+    }
+  ]
 }
