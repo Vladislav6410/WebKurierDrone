@@ -1,0 +1,14 @@
+{
+  "name": "Delivery — Precision Drop/Land",
+  "pattern": "delivery_drop",
+  "altitude_m": 60,
+  "altitude_mode": "AGL",
+  "speed_ms": 10,
+  "terrain_follow": false,
+  "camera_trigger": {"mode": "by_time_s", "value": 0},
+  "sensors": ["RGB"],
+  "geofences": ["keep-in", "no-fly"],
+  "transition": {"vtol_to_wing_alt_m": 50, "wing_to_vtol_alt_m": 25},
+  "failsafe": {"rc_loss": "RTH", "gps_loss": "LAND", "low_batt": "LAND"},
+  "notes": "Только VTOL в зоне приёмки; включить precision‑land; прервать, если точность > 1.5 м."
+}
