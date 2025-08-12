@@ -1,0 +1,16 @@
+{
+  "name": "Mapping — Area (Lawnmower)",
+  "pattern": "lawnmower",
+  "altitude_m": 120,
+  "altitude_mode": "AGL",
+  "speed_ms": 16,
+  "terrain_follow": true,
+  "overlap": {"front": 75, "side": 65},
+  "camera_trigger": {"mode": "by_distance_m", "value": 35},
+  "gsd_target_cm": 2.5,
+  "sensors": ["RGB"],
+  "geofences": ["keep-in", "no-fly"],
+  "transition": {"vtol_to_wing_alt_m": 60, "wing_to_vtol_alt_m": 30},
+  "failsafe": {"rc_loss": "RTH", "gps_loss": "HOLD_IMU", "low_batt": "RTH"},
+  "notes": "Шахматная (lawnmower) сетка; повторить пропуски; EXIF‑таймкод синхронизировать с телеметрией."
+}
