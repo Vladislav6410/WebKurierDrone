@@ -1,0 +1,119 @@
+{
+  "name": "Aerobatics Show Routine",
+  "pattern": "aerobatics",
+  "altitude_m": 100,
+  "altitude_mode": "AGL",
+  "speed_ms": 18,
+  "terrain_follow": false,
+  "sensors": [],
+  "geofences": [],
+  "buffer_m": 100,
+  "transition": {
+    "vtol_to_wing_alt_m": 70,
+    "wing_to_vtol_alt_m": 40
+  },
+  "failsafe": {
+    "rc_loss": "HOLD",
+    "gps_loss": "HOLD_IMU",
+    "low_batt": "RTH"
+  },
+  "notes": "Комплекс фигур высшего пилотажа по программе радиоуправляемых моделей 80-х",
+  "mode": "AEROBATICS",
+  "manual_only": true,
+  "sticks_mapping": {
+    "left_stick": ["throttle", "rudder"],
+    "right_stick": ["elevator", "aileron"]
+  },
+  "maneuvers": [
+    {
+      "name": "aileron_roll",
+      "repetitions": 2,
+      "entry_alt_m": 80,
+      "entry_speed_ms": 18,
+      "roll_rate_dps": 180,
+      "pitch_rate_dps": 30,
+      "max_bank_deg": 120
+    },
+    {
+      "name": "barrel_roll",
+      "repetitions": 1,
+      "entry_alt_m": 90,
+      "entry_speed_ms": 17,
+      "roll_rate_dps": 120,
+      "pitch_rate_dps": 45,
+      "max_bank_deg": 100
+    },
+    {
+      "name": "loop",
+      "repetitions": 2,
+      "entry_alt_m": 100,
+      "entry_speed_ms": 20,
+      "roll_rate_dps": 0,
+      "pitch_rate_dps": 90,
+      "max_bank_deg": 0
+    },
+    {
+      "name": "immelmann",
+      "repetitions": 1,
+      "entry_alt_m": 95,
+      "entry_speed_ms": 19,
+      "roll_rate_dps": 120,
+      "pitch_rate_dps": 60,
+      "max_bank_deg": 90
+    },
+    {
+      "name": "split_s",
+      "repetitions": 1,
+      "entry_alt_m": 100,
+      "entry_speed_ms": 19,
+      "roll_rate_dps": 120,
+      "pitch_rate_dps": 60,
+      "max_bank_deg": 90
+    },
+    {
+      "name": "cuban_eight",
+      "repetitions": 1,
+      "entry_alt_m": 100,
+      "entry_speed_ms": 20,
+      "roll_rate_dps": 120,
+      "pitch_rate_dps": 60,
+      "max_bank_deg": 90
+    },
+    {
+      "name": "stall_turn",
+      "repetitions": 1,
+      "entry_alt_m": 80,
+      "entry_speed_ms": 15,
+      "roll_rate_dps": 0,
+      "pitch_rate_dps": 90,
+      "max_bank_deg": 0
+    },
+    {
+      "name": "hammerhead",
+      "repetitions": 1,
+      "entry_alt_m": 85,
+      "entry_speed_ms": 15,
+      "roll_rate_dps": 0,
+      "pitch_rate_dps": 90,
+      "max_bank_deg": 0
+    },
+    {
+      "name": "knife_edge",
+      "repetitions": 2,
+      "entry_alt_m": 70,
+      "entry_speed_ms": 16,
+      "roll_rate_dps": 90,
+      "pitch_rate_dps": 0,
+      "max_bank_deg": 90
+    },
+    {
+      "name": "lomcovak",
+      "repetitions": 1,
+      "entry_alt_m": 100,
+      "entry_speed_ms": 20,
+      "roll_rate_dps": 300,
+      "pitch_rate_dps": 150,
+      "max_bank_deg": 120
+    }
+  ]
+}
