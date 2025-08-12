@@ -4,6 +4,7 @@ import sys
 import argparse
 import json
 import shutil
+import difflib
 from typing import List, Tuple
 
 from . import (
@@ -61,18 +62,38 @@ def _clamp_altitudes_and_notes(mission: dict) -> Tuple[bool, List[str]]:
 
     return changed, log
 
+def _pretty_dump(data: dict) -> str:
+    """Возвращает JSON-строку с отступами и без ASCII-эскейпа, завершая переводом строки."""
+    return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+
 def _fix_file(name: str, backup_enabled: bool) -> List[str]:
     """Читает пресет, фиксит высоты и notes, сохраняет при изменениях. Возвращает лог изменений."""
     path = PRESETS_DIR / f"{name}.json"
+    old_text: str
     with path.open("r", encoding="utf-8") as f:
-        mission = json.load(f)
+        old_text = f.read()
+        mission = json.loads(old_text)
 
     changed, log = _clamp_altitudes_and_notes(mission)
     if changed:
         _backup_file(path, backup_enabled)
+        new_text = _pretty_dump(mission)
         with path.open("w", encoding="utf-8") as f:
-            json.dump(mission, f, ensure_ascii=False, indent=2)
-            f.write("\n")
+            f.write(new_text)
+
+        # Показать diff, если включён backup
+        if backup_enabled:
+            diff = difflib.unified_diff(
+                old_text.splitlines(keepends=True),
+                new_text.splitlines(keepends=True),
+                fromfile=f"{path.name}.bak (old)",
+                tofile=f"{path.name} (new)",
+                lineterm=""
+            )
+            print(f"[DIFF] {path.name}")
+            for line in diff:
+                print(line, end="")  # строки уже с переводами
+            print()  # финальный перенос строки
     return log
 
 def run(names: List[str], fix_alt: bool, backup_enabled: bool) -> Tuple[int, int]:
@@ -124,7 +145,7 @@ def run(names: List[str], fix_alt: bool, backup_enabled: bool) -> Tuple[int, int
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate VTOL mission presets against mission_schema.json (с повторной проверкой после авто-чинки)"
+        description="Validate VTOL mission presets against mission_schema.json (авто-чинка, backup и diff)"
     )
     parser.add_argument(
         "--only",
@@ -139,7 +160,7 @@ def main() -> int:
     parser.add_argument(
         "--backup",
         action="store_true",
-        help="При авто-чинке делать резервную копию файла с расширением .bak"
+        help="При авто-чинке делать резервную копию .bak и показывать unified diff изменений"
     )
     args = parser.parse_args()
 
