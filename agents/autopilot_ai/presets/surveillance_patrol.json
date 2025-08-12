@@ -1,0 +1,14 @@
+{
+  "name": "Surveillance — Waypoints + Loiter",
+  "pattern": "waypoints_loiter",
+  "altitude_m": 150,
+  "altitude_mode": "AGL",
+  "speed_ms": 15,
+  "terrain_follow": true,
+  "camera_trigger": {"mode": "by_time_s", "value": 2},
+  "sensors": ["RGB", "Thermal"],
+  "geofences": ["keep-in", "no-fly"],
+  "transition": {"vtol_to_wing_alt_m": 60, "wing_to_vtol_alt_m": 30},
+  "failsafe": {"rc_loss": "RTH", "gps_loss": "HOLD_IMU", "low_batt": "RTH"},
+  "notes": "Патруль по точкам; при событии — loiter/спираль, затем продолжить миссию."
+}
