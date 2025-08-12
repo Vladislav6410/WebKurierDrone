@@ -5,24 +5,34 @@ import json
 PRESETS_DIR = Path(__file__).parent
 
 def load_preset(name: str) -> dict:
+    """Загрузить один пресет по имени (без .json)."""
     p = PRESETS_DIR / f"{name}.json"
+    if not p.exists():
+        raise FileNotFoundError(f"Preset not found: {p}")
     with p.open("r", encoding="utf-8") as f:
         return json.load(f)
 
 def list_presets() -> list:
-    return [p.stem for p in PRESETS_DIR.glob("*.json") if p.stem != "mission_schema"]
+    """Список доступных пресетов (без mission_schema)."""
+    return sorted([p.stem for p in PRESETS_DIR.glob("*.json") if p.stem != "mission_schema"])
 
-# ↓ Экспорт помощников валидации
-from .validator import validate_dict, validate_file, validate_preset_by_name  # noqa: E402,F401# engine/agents/autopilot_ai/presets/__init__.py
-from pathlib import Path
-import json
+def load_all_presets() -> dict:
+    """Загрузить все пресеты в словарь {name: dict}."""
+    return {name: load_preset(name) for name in list_presets()}
 
-PRESETS_DIR = Path(__file__).parent
+# Экспорт функций валидации
+from .validator import (  # noqa: E402
+    validate_dict,
+    validate_file,
+    validate_preset_by_name,
+)
 
-def load_preset(name: str) -> dict:
-    p = PRESETS_DIR / f"{name}.json"
-    with p.open("r", encoding="utf-8") as f:
-        return json.load(f)
-
-def list_presets() -> list:
-    return [p.stem for p in PRESETS_DIR.glob("*.json") if p.stem != "mission_schema"]
+__all__ = [
+    "PRESETS_DIR",
+    "load_preset",
+    "list_presets",
+    "load_all_presets",
+    "validate_dict",
+    "validate_file",
+    "validate_preset_by_name",
+]
