@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   unittest:
+    name: "Unit tests (Py${{ matrix.python-version }})"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -35,3 +36,51 @@ jobs:
       - name: Run unit tests
         run: |
           python -m unittest discover -s tests
+
+      - name: Save test results (artifact)
+        if: always()
+        run: |
+          mkdir -p artifacts
+          python -m unittest discover -s tests > artifacts/unittest.log 2>&1 || true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unittest-logs
+          path: artifacts/unittest.log
+
+  lint:
+    name: "Lint (flake8) — non-blocking"
+    runs-on: ubuntu-latest
+    continue-on-error: true   # ⬅️ не блокировать билд при ошибках стиля
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install flake8
+        run: pip install --upgrade pip flake8
+
+      - name: Run flake8
+        run: |
+          # проверяем только наш код; при ошибках job не валит весь workflow
+          flake8 engine tests || true
+
+      - name: Save flake8 report (artifact)
+        if: always()
+        run: |
+          mkdir -p artifacts
+          flake8 engine tests > artifacts/flake8.txt || true
+
+      - name: Upload flake8 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flake8-report
+          path: artifacts/flake8.txt
