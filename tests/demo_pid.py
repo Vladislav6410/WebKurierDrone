@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Демонстрация работы PID-контроллера на упрощённой модели 1-го порядка.
-Печатается динамика: шаг, значение x, управляющий сигнал u, ошибка.
+Печатается таблица + строится график изменения состояния.
 """
 
+import matplotlib.pyplot as plt
 from utils.pid import PID
+
 
 def main():
     pid = PID(
@@ -16,16 +18,40 @@ def main():
 
     x = 0.0       # начальное состояние (например, высота)
     dt = 0.1
-    alpha = 0.05  # коэффициент реакции "системы"
+    alpha = 0.05  # коэффициент реакции системы
+
+    history_t, history_x, history_u, history_err = [], [], [], []
 
     print(f"{'t':>4} {'x':>8} {'u':>8} {'error':>8}")
     print("-" * 32)
 
-    for step in range(50):
+    for step in range(100):   # 10 секунд моделирования
         u = pid.update(x, dt)
         x += alpha * u
         error = pid.setpoint - x
-        print(f"{step*dt:4.1f} {x:8.3f} {u:8.3f} {error:8.3f}")
+
+        t = step * dt
+        history_t.append(t)
+        history_x.append(x)
+        history_u.append(u)
+        history_err.append(error)
+
+        if step % 5 == 0:  # печатаем не каждую итерацию, а раз в 5 шагов
+            print(f"{t:4.1f} {x:8.3f} {u:8.3f} {error:8.3f}")
+
+    # графики
+    plt.figure(figsize=(10, 5))
+    plt.plot(history_t, history_x, label="x (состояние)")
+    plt.plot(history_t, [pid.setpoint]*len(history_t), "r--", label="Setpoint")
+    plt.plot(history_t, history_u, label="u (управление)")
+    plt.plot(history_t, history_err, label="error")
+    plt.xlabel("Время (с)")
+    plt.ylabel("Значения")
+    plt.title("PID демо: стабилизация на заданное значение")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
 
 if __name__ == "__main__":
     main()
