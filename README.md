@@ -1,5 +1,5 @@
 # WebKurierDrone
-
+[![Tests](https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml/badge.svg)](https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml)
 Интеллектуальная система управления автономными дронами для задач:
 
 - Геодезии и картографии  
