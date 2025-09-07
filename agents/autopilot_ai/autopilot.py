@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-AutopilotAI — минимальное ядро автопилота (PID) + справочник (Advisor).
-✅ Учтено всё из старой версии (AirframeSpec, AutopilotAdvisor: libs, rules, capabilities, mission_presets, checklist).
-✅ Добавлено рабочее ядро автопилота с режимами MANUAL/HOLD_ALT/CRUISE, failsafe и мини-симулятором.
+AutopilotAI — единый модуль:
+  • Ядро автопилота (PID) с режимами: MANUAL / HOLD_ALT / CRUISE / RTL / LAND
+  • Failsafe-профили: LOW_BATTERY→LAND, LINK_LOSS→RTL, BARO_FAULT→HOLD_ALT, NO_RTK→degrade
+  • Terrain-follow (AGL) + keep-in геозона + домашняя точка (RTL)
+  • Мини-симулятор динамики и демо
+  • Advisor (AirframeSpec, справочник: libs, rules, capabilities, mission_presets, checklist)
 
-Зависимости: utils.pid.PID
+Зависимости: utils.pid.PID  (и опц.: utils.gsd, utils.terrain — можно подключить позже)
 """
 
 from dataclasses import dataclass, field
 from typing import Dict, Any, Optional, Tuple, List
+from math import hypot
 from utils.pid import PID
 
-# ========================== ЧАСТЬ 1. РАБОЧИЙ АВТОПИЛОТ ==========================
-
+# ========================== КОНТРОЛЛЕРЫ ==========================
 @dataclass
 class AltitudeController:
-    """Контроллер высоты (барометрический замкнутый контур). Выход: thrust [0..1]."""
+    """Удержание высоты (баро). Выход: thrust [0..1]."""
     kp: float = 0.9
     ki: float = 0.25
     kd: float = 0.05
@@ -24,6 +27,7 @@ class AltitudeController:
     int_min: float = -0.5
     int_max: float = 0.5
     target_alt_m: float = 0.0
+    hover_ff: float = 0.45  # feed-forward на «висение/крейз»
     pid: PID = field(init=False)
 
     def __post_init__(self):
@@ -42,15 +46,16 @@ class AltitudeController:
         self.pid.reset()
 
     def update(self, baro_alt_m: float, dt: float) -> float:
-        thrust = self.pid.update(measurement=baro_alt_m, dt=dt)
-        if thrust != thrust:  # NaN guard
-            thrust = 0.0
+        u = self.pid.update(measurement=baro_alt_m, dt=dt)
+        if u != u:  # NaN guard
+            u = 0.0
+        thrust = self.hover_ff + 0.8 * (u - 0.5)
         return max(self.out_min, min(self.out_max, thrust))
 
 
 @dataclass
 class SpeedController:
-    """Контроллер воздушной скорости. Выход: pitch [-1..1] (условная нормализация)."""
+    """Удержание воздушной скорости. Выход: pitch [-1..1]."""
     kp: float = 0.4
     ki: float = 0.05
     kd: float = 0.02
@@ -83,38 +88,67 @@ class SpeedController:
         return max(self.out_min, min(self.out_max, pitch_cmd))
 
 
+# ========================== ВСПОМОГАТЕЛИ ==========================
+@dataclass
+class Geofence:
+    """Keep-in геозона: круг (lat0, lon0, radius_m). Упрощённая локальная проекция."""
+    lat0: float
+    lon0: float
+    radius_m: float
+
+    def inside(self, lat: float, lon: float) -> bool:
+        dx = (lon - self.lon0) * 111320.0 * 0.6  # грубо по долготе
+        dy = (lat - self.lat0) * 111320.0
+        return hypot(dx, dy) <= self.radius_m
+
+
+@dataclass
+class TerrainFollower:
+    """Целевой уровень: target_agl_m + terrain_elev."""
+    target_agl_m: float = 60.0  # ← базовая высота AGL (можно менять под миссию)
+
+    def target_asl(self, terrain_elev_m: float) -> float:
+        return terrain_elev_m + self.target_agl_m
+
+
+# ========================== АВТОПИЛОТ (ЯДРО) ==========================
 class Autopilot:
     """
-    Мини-ядро автопилота с режимами:
-      - MANUAL: pass-through ручных команд
-      - HOLD_ALT: удержание высоты
-      - CRUISE: удержание высоты + воздушной скорости
-
-    update(...) -> команды на исполнительные механизмы:
-      {
-        "thrust": 0..1,
-        "pitch": -1..1,
-        "roll": -1..1,
-        "yaw": -1..1,
-        "failsafe": bool,
-        "failsafe_reason": str,
-        "mode": str,
-        "targets": {"alt_m": float, "airspeed_ms": float}
-      }
+    Режимы:
+      MANUAL — ручное управление
+      HOLD_ALT — удержание высоты
+      CRUISE — высота + скорость
+      RTL — возврат домой
+      LAND — посадка
     """
-    MODES = {"MANUAL", "HOLD_ALT", "CRUISE"}
+    MODES = {"MANUAL", "HOLD_ALT", "CRUISE", "RTL", "LAND"}
 
     def __init__(self):
         self.mode: str = "MANUAL"
         self.alt_ctl = AltitudeController()
         self.spd_ctl = SpeedController()
 
-        # Пороговые значения безопасности
-        self.min_batt_v: float = 19.2  # 6S ≈ 3.2В/ячейку
+        # Безопасность
+        self.min_batt_v: float = 19.2     # 6S≈3.2В/ячейку
         self.link_timeout_s: float = 2.0
         self._link_timer: float = 0.0
+        self.require_rtk: bool = False
 
-    # ---- Режимы и цели ----
+        # Геозона/рельеф
+        self.keepin: Optional[Geofence] = None
+        self.terrain = TerrainFollower(target_agl_m=60.0)
+        self.use_terrain: bool = True
+
+        # Дом для RTL
+        self.home: Optional[Tuple[float, float, float]] = None  # lat, lon, alt_asl_m
+
+    # ---- Публичный API ----
+    def set_home(self, lat: float, lon: float, alt_asl_m: float) -> None:
+        self.home = (float(lat), float(lon), float(alt_asl_m))
+
+    def set_geofence(self, lat: float, lon: float, radius_m: float) -> None:
+        self.keepin = Geofence(lat, lon, radius_m)
+
     def set_mode(self, mode: str,
                  target_alt_m: Optional[float] = None,
                  target_airspeed_ms: Optional[float] = None) -> None:
@@ -136,16 +170,13 @@ class Autopilot:
 
     # ---- Failsafe ----
     def _failsafe_check(self, sys: Dict[str, Any], sensors: Dict[str, Any]) -> Tuple[bool, str]:
-        batt_v: float = float(sys.get("battery_v", 0.0))
-        link_ok: bool = bool(sys.get("link_ok", True))
-        dt: float = float(sys.get("dt", 0.1))
-
-        if link_ok:
-            self._link_timer = 0.0
-        else:
-            self._link_timer += dt
-
+        batt_v = float(sys.get("battery_v", 0.0))
+        link_ok = bool(sys.get("link_ok", True))
+        dt = float(sys.get("dt", 0.1))
+        rtk_fix = bool(sensors.get("rtk_fix", True))  # True = RTK fixed/float
         baro_alt_m = sensors.get("baro_alt_m", None)
+
+        self._link_timer = 0.0 if link_ok else (self._link_timer + dt)
 
         if batt_v <= 0 or batt_v < self.min_batt_v:
             return True, "LOW_BATTERY"
@@ -153,6 +184,8 @@ class Autopilot:
             return True, "LINK_LOSS"
         if baro_alt_m is None or not isinstance(baro_alt_m, (int, float)):
             return True, "BARO_FAULT"
+        if self.require_rtk and not rtk_fix:
+            return True, "NO_RTK"
         return False, ""
 
     # ---- Основной апдейт ----
@@ -161,6 +194,11 @@ class Autopilot:
         dt = float(sys.get("dt", 0.1))
         failsafe, reason = self._failsafe_check(sys, sensors)
 
+        # Terrain-follow (если включён и режим требует высоты)
+        terrain_elev_m = float(sensors.get("terrain_elev_m", 0.0))
+        if self.use_terrain and self.mode in {"HOLD_ALT", "CRUISE"}:
+            self.alt_ctl.set_target(self.terrain.target_asl(terrain_elev_m))
+
         out = {
             "thrust": 0.0, "pitch": 0.0, "roll": 0.0, "yaw": 0.0,
             "failsafe": failsafe, "failsafe_reason": reason,
@@ -168,11 +206,28 @@ class Autopilot:
             "targets": {"alt_m": self.alt_ctl.target_alt_m, "airspeed_ms": self.spd_ctl.target_ms},
         }
 
+        # Профили поведения при авариях
         if failsafe:
-            out["thrust"] = 0.3
-            out["pitch"] = 0.1
-            return out
+            if reason == "LOW_BATTERY":
+                self.mode = "LAND"
+            elif reason == "LINK_LOSS":
+                self.mode = "RTL" if self.home else "HOLD_ALT"
+            elif reason == "BARO_FAULT":
+                self.mode = "HOLD_ALT"
+            elif reason == "NO_RTK":
+                # деградация: продолжаем без остановки миссии, но метим reason
+                pass
 
+        # Геозона: выход => RTL (если не LAND)
+        lat, lon = float(sensors.get("lat", 0.0)), float(sensors.get("lon", 0.0))
+        if self.keepin and not self.keepin.inside(lat, lon) and self.mode != "LAND":
+            self.mode = "RTL"
+
+        # Данные сенсоров
+        baro_alt_m = float(sensors.get("baro_alt_m", 0.0))
+        airspeed_ms = float(sensors.get("airspeed", 0.0))
+
+        # Режимы
         if self.mode == "MANUAL":
             cmd = manual_cmd or {}
             out["thrust"] = float(cmd.get("thrust", 0.0))
@@ -181,23 +236,33 @@ class Autopilot:
             out["yaw"]    = float(cmd.get("yaw",    0.0))
             return out
 
-        baro_alt_m: float = float(sensors.get("baro_alt_m", 0.0))
-        airspeed_ms: float = float(sensors.get("airspeed", 0.0))
-
         if self.mode == "HOLD_ALT":
-            out["thrust"] = self.alt_ctl.update(baro_alt_m=baro_alt_m, dt=dt)
+            out["thrust"] = self.alt_ctl.update(baro_alt_m, dt)
             out["pitch"] = 0.0
             return out
 
         if self.mode == "CRUISE":
-            out["thrust"] = self.alt_ctl.update(baro_alt_m=baro_alt_m, dt=dt)
-            out["pitch"] = self.spd_ctl.update(airspeed_ms=airspeed_ms, dt=dt)
+            out["thrust"] = self.alt_ctl.update(baro_alt_m, dt)
+            out["pitch"]  = self.spd_ctl.update(airspeed_ms, dt)
+            return out
+
+        if self.mode == "RTL":
+            # Упрощённо: держим высоту, слегка «тянем» нос (возврат по курсу реализуется на внешнем слое)
+            out["thrust"] = self.alt_ctl.update(baro_alt_m, dt)
+            out["pitch"]  = 0.15
+            return out
+
+        if self.mode == "LAND":
+            # Примитивная посадка: ступенчатое снижение
+            self.alt_ctl.set_target(max(0.0, self.alt_ctl.target_alt_m - 0.6))  # ≈0.6 м/шаг
+            out["thrust"] = max(0.2, self.alt_ctl.update(baro_alt_m, dt) - 0.1)
+            out["pitch"] = -0.05
             return out
 
         return out
 
 
-# --------- Мини-симуляция для ручных проверок ---------
+# ========================== МИНИ-СИМУЛЯТОР ==========================
 def _simulate_step(state: Dict[str, float], cmd: Dict[str, float], dt: float) -> Dict[str, float]:
     """
     Игрушечная динамика:
@@ -222,23 +287,30 @@ def _simulate_step(state: Dict[str, float], cmd: Dict[str, float], dt: float) ->
     return state
 
 
-def demo_cruise(seconds: float = 20.0, dt: float = 0.1, target_alt: float = 50.0, target_ms: float = 18.0) -> None:
+def demo_cruise(seconds: float = 20.0, dt: float = 0.1,
+                target_agl: float = 60.0, terrain_elev_m: float = 140.0) -> None:
+    """
+    Демо: CRUISE с terrain-follow. Итоговая цель ≈ terrain + AGL.
+    """
     ap = Autopilot()
-    ap.set_mode("CRUISE", target_alt_m=target_alt, target_airspeed_ms=target_ms)
+    ap.use_terrain = True
+    ap.set_mode("CRUISE", target_alt_m=terrain_elev_m + target_agl, target_airspeed_ms=18.0)
 
-    state = {"alt_m": 0.0, "airspeed": 0.0}
+    state = {"alt_m": terrain_elev_m, "airspeed": 0.0}
     for _ in range(int(seconds / dt)):
-        sensors = {"baro_alt_m": state["alt_m"], "airspeed": state["airspeed"]}
+        sensors = {
+            "baro_alt_m": state["alt_m"], "airspeed": state["airspeed"],
+            "terrain_elev_m": terrain_elev_m, "lat": 52.12, "lon": 13.45, "rtk_fix": True
+        }
         sys = {"dt": dt, "battery_v": 23.5, "link_ok": True}
         cmd = ap.update(sensors, sys)
         state = _simulate_step(state, cmd, dt)
 
-    print(f"[CRUISE DEMO] alt={state['alt_m']:.1f} m, airspeed={state['airspeed']:.1f} m/s, "
-          f"targets={ap.alt_ctl.target_alt_m}/{ap.spd_ctl.target_ms}")
+    print(f"[CRUISE DEMO] alt={state['alt_m']:.1f} m, v={state['airspeed']:.1f} m/s, mode={ap.mode}, "
+          f"targets={ap.alt_ctl.target_alt_m:.1f}/{ap.spd_ctl.target_ms:.1f}")
 
-# ======================= ЧАСТЬ 2. СПРАВОЧНИК (СТАРЫЙ МОДУЛЬ) =======================
-# (сохранён без потерь; можно использовать параллельно с Autopilot)
 
+# ========================== СПРАВОЧНИК (ADVISOR) ==========================
 @dataclass
 class AirframeSpec:
     model: str = "FIXAR 007 NG"
@@ -280,50 +352,47 @@ class AutopilotAdvisor:
             "routing_geodesy": ["shapely", "geopandas", "pyproj", "rasterio"],
             "terrain_follow": ["GDAL", "SRTM/DSM readers", "scipy.interpolate"],
             "telemetry_ui": ["Flask/FastAPI", "websockets", "plotly dash (опц.)"],
-            "safety_compliance": ["jsonschema (SORA forms)", "pydantic"]
+            "safety_compliance": ["jsonschema (SORA forms), pydantic"]
         }
 
     def flight_rules_eu(self) -> Dict[str, str]:
         return {
-            "category": "Specific (по умолчанию для BVLOS/VTOL коммерческих миссий)",
+            "category": "Specific (BVLOS/VTOL коммерческие миссии)",
             "method": "SORA 10 steps + Operational Authorisation",
             "remote_id": "Обязателен с 01.01.2024 (DRI/Remote ID)",
-            "adsb_remote_id_note": "ADSB/Remote ID опционально/по сценарию; следуйте NAA/UTM",
+            "adsb_remote_id_note": "ADSB/Remote ID по сценарию; следуйте NAA/UTM",
         }
 
     def capabilities(self) -> Dict[str, List[str]]:
         return {
             "autonomy": [
                 "Автономный взлёт/посадка VTOL",
-                "Автономный полёт по миссии (area/waypoints)",
-                "Переход VTOL↔крейсер (fixed-wing)",
-                "Полёт без компаса (устойчив к магнитным помехам)",
-                "Работа при GPS-помехах: IMU-fallback; расширенный режим CV+AI",
-                "Черный ящик/логирование (BlackBox аналог)"
+                "Миссия (area/waypoints) + переход VTOL↔fixed-wing",
+                "Полёт без компаса (стойкость к магнитным помехам)",
+                "IMU-fallback при GPS-помехах; CV+AI режим расширенно",
+                "Черный ящик/логирование"
             ],
             "safety": [
-                "Terrain following: LiDAR-базир. коррекция AGL на малых высотах",
+                "Terrain-follow (LiDAR/DSM коррекция AGL)",
                 "Failsafe: RTH/hold/land по триггерам",
-                "Ограничение по ветру/скорости/углам атаки"
+                "Ограничения по ветру/скорости/углам атаки"
             ],
             "manual_supervision": [
                 "Ручное вмешательство через GCS",
-                "Быстрая развёртка (≈5 мин) для выезда"
+                "Быстрая развёртка (~5 мин)"
             ]
         }
 
     def aerobatics_policy(self) -> Dict[str, List[str]]:
         return {
-            "not_allowed": [
-                "Петля (loop), бочка (roll), штопор, иммельман, перевёрнутый полёт"
-            ],
+            "not_allowed": ["Loop, Roll, Stall/Spin, Immelmann, Inverted"],
             "allowed_training_patterns": [
-                "Широкие развороты, восьмёрка на высоте, орбита (loiter)",
-                "Плавные набор/снижение, S-кривые для калибровки"
+                "Широкие развороты, восьмёрка, орбита (loiter)",
+                "Плавный набор/снижение, S-кривые"
             ],
             "reason": [
-                "Рабочая платформа VTOL для картографии/инспекций, не аэрошоу",
-                "Риск перегрузок и срыва потока на крыле с полезной нагрузкой"
+                "Рабочая платформа VTOL (картография/инспекции), не аэрошоу",
+                "Риск перегрузок/срыва потока на крыле с payload"
             ]
         }
 
@@ -350,17 +419,18 @@ class AutopilotAdvisor:
 
     def preflight_checklist(self) -> List[str]:
         return [
-            "Оценить SORA/авторизацию NAA; активен Remote ID",
-            "Погода: ветер ≤ 15 м/с, дождь/пыли по IP54",
+            "SORA/авторизация NAA подтверждена; Remote ID активен",
+            "Погода: ветер ≤ 15 м/с; соответствие IP-рейтингу",
             "Батарея 25V 27Ah заряжена; расчёт энергии по профилю миссии",
-            "LiDAR/баро/IMU калиброваны; GNSS/RTK (если есть) готов",
-            "Геозоны/нотамы проверены; связь устойчива",
+            "LiDAR/баро/IMU калиброваны; GNSS/RTK готов",
+            "Геозоны/NOTAM проверены; связь устойчива",
             "Параметры камеры/GSD заданы; payload ≤ 2 кг; MTOW ≤ 7 кг"
         ]
 
 
+# ========================== СТАРТЕР (SMOKE-TEST) ==========================
 if __name__ == "__main__":
-    # Быстрый smoke-тест обоих блоков
+    # Advisor вывод
     advisor = AutopilotAdvisor()
     print("CAPABILITIES:", advisor.capabilities())
     print("LIBS:", advisor.recommended_libs())
@@ -369,5 +439,5 @@ if __name__ == "__main__":
     print("PRESETS:", advisor.mission_presets())
     print("PREFLIGHT:", advisor.preflight_checklist())
 
-    # Мини-демо крейза
+    # Демо крейза (terrain-follow: 140 м террейн + 60 м AGL = цель ~200 м ASL)
     demo_cruise()
