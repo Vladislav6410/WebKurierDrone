@@ -1,1 +1,6 @@
 jsonschema
+mavsdk
+pillow
+numpy
+scipy
+requests
