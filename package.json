@@ -1,0 +1,14 @@
+{
+  "name": "webkurier-app",
+  "version": "1.0.0",
+  "description": "Demo setup for Node.js CI",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest --ci",
+    "build": "echo \"Build step (placeholder)\""
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "jest": "^29.0.0"
+  }
+}
