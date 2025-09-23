@@ -1,16 +1,18 @@
-# Базовый образ Python
 FROM python:3.11-slim
 
-# Рабочая директория внутри контейнера
 WORKDIR /app
 
-# Копируем код проекта
+# 1) зависимости
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 2) код проекта
 COPY engine/ ./engine/
+COPY agents/ ./agents/
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir \
-    mavsdk \
-    pillow
-
-# Точка входа (запускаем твой автопилот-агент)
+# 3) точка входа
+# если у тебя основной запуск через модуль автопилота:
 CMD ["python", "-m", "engine.agents.autopilot_ai"]
+
+# если хочешь стартовать общий скрипт дрона, замени строку выше на:
+# CMD ["python", "agents/Drone.py"]
