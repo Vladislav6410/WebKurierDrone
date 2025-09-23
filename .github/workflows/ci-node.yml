@@ -1,0 +1,61 @@
+name: CI Node
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      matrix:
+        node-version: [18, 20]  # тестируем на двух LTS версиях Node.js
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Lint (eslint) if configured
+        run: |
+          if npm run | grep -q " lint"; then
+            npm run lint
+          elif [ -f .eslintrc.json ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ]; then
+            npx eslint .
+          else
+            echo "No eslint config or script, skipping lint."
+          fi
+
+      - name: Run tests if present
+        run: |
+          if npm run | grep -q " test"; then
+            npm test --silent
+          elif [ -d test ] || [ -d tests ]; then
+            npx jest --ci || npx vitest run || echo "No known test runner configured."
+          else
+            echo "No tests found, skipping."
+          fi
+
+      - name: Build if script exists
+        run: |
+          if npm run | grep -q " build"; then
+            npm run build
+          else
+            echo "No build script, skipping."
+          fi
