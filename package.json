@@ -1,10 +1,10 @@
 {
   "name": "webkurier-hybrid",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "lint": "eslint . || echo 'No eslint config, skipping lint'",
-    "test": "jest --ci --passWithNoTests || echo 'No tests configured'"
+    "test": "jest --ci --passWithNoTests"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
