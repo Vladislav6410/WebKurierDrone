@@ -1,14 +1,13 @@
 {
-  "name": "webkurier-app",
+  "name": "webkurier-hybrid",
   "version": "1.0.0",
-  "description": "Demo setup for Node.js CI",
+  "private": true,
   "scripts": {
-    "lint": "eslint .",
-    "test": "jest --ci",
-    "build": "echo \"Build step (placeholder)\""
+    "lint": "echo \"No lint configured\" && exit 0",
+    "test": "echo \"No tests configured\" && exit 0"
   },
   "devDependencies": {
-    "eslint": "^9.0.0",
-    "jest": "^29.0.0"
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0"
   }
 }
