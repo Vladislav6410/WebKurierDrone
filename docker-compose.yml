@@ -12,10 +12,20 @@ services:
       MAVSDK_SERVER_PORT: "50051"
     ports:
       - "50051:50051"   # MAVSDK gRPC
-      - "5000:5000"     # Flask/HTTP API (если будет UI или REST)
     restart: unless-stopped
     volumes:
       - ./engine:/app/engine
       - ./agents:/app/agents
       - ./config:/app/config
       - ./logs:/app/logs
+
+  web:
+    container_name: webkurier-web
+    build:
+      context: ./ui        # папка ui с index.html, app.js, style.css
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"       # Web UI доступен на http://localhost:5000
+    restart: unless-stopped
+    volumes:
+      - ./ui:/app/ui
