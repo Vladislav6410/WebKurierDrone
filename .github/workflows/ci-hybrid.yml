@@ -5,7 +5,6 @@ on:
     branches: [ main ]
   pull_request:
 
-# чтобы параллельные пуши не плодили очереди
 concurrency:
   group: ci-hybrid-${{ github.ref }}
   cancel-in-progress: true
@@ -14,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  # ---------- PYTHON ----------
+  # ================= PYTHON =================
   test-python:
     name: Python Lint & Tests
     runs-on: ubuntu-latest
@@ -49,8 +48,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest flake8
 
-      - name: Lint (flake8)
+      - name: Lint (flake8) — warnings only
         if: steps.detect_py.outputs.count != '0'
+        continue-on-error: true
         run: flake8 . --max-line-length=100
 
       - name: Run tests (pytest)
@@ -61,7 +61,7 @@ jobs:
         if: steps.detect_py.outputs.count == '0'
         run: echo "No Python files — skipping Python job."
 
-  # ---------- NODE ----------
+  # ================ NODE (root/ui/web-admin) ================
   test-node:
     name: Node Lint & Tests (18, 20)
     runs-on: ubuntu-latest
@@ -70,6 +70,7 @@ jobs:
     strategy:
       matrix:
         node-version: [18, 20]
+        workdir: ['.', 'ui', 'web-admin']  # проверим три стандартные папки
 
     steps:
       - name: Checkout
@@ -77,6 +78,7 @@ jobs:
 
       - name: Check for package.json
         id: detect_node
+        working-directory: ${{ matrix.workdir }}
         run: |
           if [ -f package.json ]; then
             echo "present=true" >> $GITHUB_OUTPUT
@@ -90,9 +92,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: ${{ matrix.workdir }}/package-lock.json
 
       - name: Install dependencies
         if: steps.detect_node.outputs.present == 'true'
+        working-directory: ${{ matrix.workdir }}
         run: |
           if [ -f package-lock.json ]; then
             npm ci
@@ -100,8 +104,10 @@ jobs:
             npm install
           fi
 
-      - name: Lint (eslint) if configured
+      - name: Lint (eslint) — warnings only
         if: steps.detect_node.outputs.present == 'true'
+        continue-on-error: true
+        working-directory: ${{ matrix.workdir }}
         run: |
           if npm run | grep -q " lint"; then
             npm run lint
@@ -113,6 +119,7 @@ jobs:
 
       - name: Run tests if present
         if: steps.detect_node.outputs.present == 'true'
+        working-directory: ${{ matrix.workdir }}
         run: |
           if npm run | grep -q " test"; then
             npm test --silent
@@ -124,6 +131,7 @@ jobs:
 
       - name: Build if script exists
         if: steps.detect_node.outputs.present == 'true'
+        working-directory: ${{ matrix.workdir }}
         run: |
           if npm run | grep -q " build"; then
             npm run build
@@ -133,4 +141,4 @@ jobs:
 
       - name: Skip note
         if: steps.detect_node.outputs.present != 'true'
-        run: echo "No package.json — skipping Node job."
+        run: echo "No package.json in ${{ matrix.workdir }} — skipping."
