@@ -1,23 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>WebKurierDrone Control Panel</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>WebKurierDrone Control Panel</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="app.js"></script>
 </head>
 <body>
-    <h1>Панель управления дроном</h1>
-    <div id="status">Статус: Подключение...</div>
-    <div>
-        <button onclick="sendCommand('start')">🚀 Старт</button>
-        <button onclick="sendCommand('stop')">🛑 Стоп</button>
-        <select id="languageSelect" onchange="changeLanguage()">
-            <option value="ru">Русский</option>
-            <option value="en">English</option>
-            <option value="de">Deutsch</option>
-            <option value="pl">Polski</option>
-        </select>
-    </div>
-    <script src="app.js"></script>
+  <h1 id="title">Панель управления дроном</h1>
+
+  <div id="status">Статус: подключение…</div>
+
+  <div class="controls">
+    <button onclick="checkHealth()">🔍 Проверить связь</button>
+    <button onclick="armDrone()">⚡ Включить (ARM)</button>
+    <button onclick="takeoffDrone()">⬆️ Взлететь</button>
+    <button onclick="landDrone()">⬇️ Посадить</button>
+  </div>
+
+  <div class="legacy">
+    <button onclick="sendCommand('start')">🚀 Старт</button>
+    <button onclick="sendCommand('stop')">🛑 Стоп</button>
+    <select id="languageSelect" onchange="changeLanguage()">
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+      <option value="de">Deutsch</option>
+      <option value="pl">Polski</option>
+    </select>
+  </div>
 </body>
 </html>
