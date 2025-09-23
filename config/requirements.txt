@@ -1,0 +1,4 @@
+mavsdk
+numpy
+spectral
+Pillow
