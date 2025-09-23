@@ -4,3 +4,5 @@ pillow
 numpy
 scipy
 requests
+pytest
+flake8
