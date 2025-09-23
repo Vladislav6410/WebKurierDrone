@@ -1,0 +1,5 @@
+u_space:
+  enabled: true
+  provider: "USSP_PLACEHOLDER"
+  api_key: "${USSP_API_KEY:-}"
+  remote_id: true
