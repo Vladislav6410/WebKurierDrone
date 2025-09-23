@@ -11,21 +11,41 @@ services:
       MAVSDK_SERVER_HOST: "0.0.0.0"
       MAVSDK_SERVER_PORT: "50051"
     ports:
-      - "50051:50051"   # MAVSDK gRPC
+      - "50051:50051"   # MAVSDK gRPC API
     restart: unless-stopped
     volumes:
       - ./engine:/app/engine
       - ./agents:/app/agents
       - ./config:/app/config
       - ./logs:/app/logs
+    depends_on:
+      - db
 
   web:
     container_name: webkurier-web
     build:
-      context: ./ui        # папка ui с index.html, app.js, style.css
+      context: ./ui
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"       # Web UI доступен на http://localhost:5000
+      - "5000:5000"     # Web UI → http://localhost:5000
     restart: unless-stopped
     volumes:
       - ./ui:/app/ui
+    depends_on:
+      - db
+
+  db:
+    container_name: webkurier-db
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: webkurier
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: autopilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
