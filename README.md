@@ -1,12 +1,45 @@
 # WebKurierDrone<p align="center">
   <p align="center">
-  <img src="assets/hero_webkurierdrone.jpg" alt="WebKurierDrone — от детской мечты к AI-дронам" width="100%">
+  <img src="docs/hero_webkurierdrone.jpg" alt="WebKurierDrone — от мечты к технологиям" width="100%">
 </p>
 
-<h3 align="center">🌞 WebKurierDrone</h3>
+<h1 align="center">🌞 WebKurierDrone</h1>
+
 <p align="center">
-  <b>Управление дронами через Python · Геодезия · 2D/3D-карты · Голос · Telegram & WhatsApp</b>
+  Управление дронами через <b>Python</b> · Геодезия · 2D/3D-карты · Голос · Telegram & WhatsApp  
+  <br>
+  <a href="https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml">
+    <img src="https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml/badge.svg" alt="Tests">
+  </a>
 </p>
+
+---
+
+## 🚀 WebKurierDrone v1.0
+
+Интеллектуальная система управления автономными дронами для задач:
+
+- 🛰 Геодезии и картографии  
+- 📦 Доставки  
+- 🔥 Пожарного и градиентного мониторинга  
+- 🎙 Голосового управления  
+- 💬 Интеграции с Telegram и WhatsApp  
+- ⚙️ Подключения к ядру **WebKurierCore** и **WebKurierChain**
+
+---
+
+## 🔧 Установка и запуск
+
+```bash
+# 1. Клонировать репозиторий
+git clone https://github.com/Vladislav6410/WebKurierDrone.git
+cd WebKurierDrone
+
+# 2. Собрать Docker-образ
+docker build -t webkurier .
+
+# 3. Запустить контейнер
+docker run -p 5000:5000 webkurier
 [![Tests](https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml/badge.svg)](https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml)
 Интеллектуальная система управления автономными дронами для задач:
 
