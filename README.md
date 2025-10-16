@@ -1,4 +1,12 @@
-# WebKurierDrone
+# WebKurierDrone<p align="center">
+  <img src="docs/banner_webkurierdrone.png" alt="WebKurierDrone — Where dreams meet APIs" width="100%">
+</p>
+
+<h3 align="center">🌌 WebKurierDrone</h3>
+<p align="center">
+  <b>Intelligent drone control for geodesy, delivery, fire monitoring, and voice integration.</b><br>
+  <i>Built with Python • Integrated with Telegram & WhatsApp • Powered by AI</i>
+</p>
 [![Tests](https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml/badge.svg)](https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml)
 Интеллектуальная система управления автономными дронами для задач:
 
