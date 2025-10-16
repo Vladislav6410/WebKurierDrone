@@ -1,7 +1,7 @@
 # WebKurierDrone
 
   <p align="center">
-  <img src="docs/hero_webkurierdrone.jpg?raw=true" alt="WebKurierDrone" width="640">
+  <img src="https://www.dropbox.com/scl/fi/1hjaphb151n3ghuw262ux/IMG_2176.jpg?raw=1" alt="WebKurierDrone" width="640">
 </p>
 
 # 🚁 WebKurierDrone
