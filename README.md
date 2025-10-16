@@ -1,9 +1,11 @@
-# WebKurierDrone<p align="center">
-<p align="center">
-  <img src="docs/hero_webkurierdrone.jpg" alt="WebKurierDrone — от мечты к технологиям" width="100%">
+# WebKurierDrone
+
+  <р align="center">
+  <img src="docs/hero_webkurierdrone.jpg" alt="WebKurierDrone" width="640">
 </p>
 
----
+# 🚁 WebKurierDrone
+Интеллектуальная система управления автономными дронами...
 
 ## 🚀 WebKurierDrone v1.0
 
