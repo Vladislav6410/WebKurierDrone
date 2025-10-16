@@ -1,16 +1,6 @@
 # WebKurierDrone<p align="center">
-  <p align="center">
-  <img src="docs/hero_webkurierdrone.jpg" alt="WebKurierDrone — от мечты к технологиям" width="100%">
-</p>
-
-<h1 align="center">🌞 WebKurierDrone</h1>
-
 <p align="center">
-  Управление дронами через <b>Python</b> · Геодезия · 2D/3D-карты · Голос · Telegram & WhatsApp  
-  <br>
-  <a href="https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml">
-    <img src="https://github.com/Vladislav6410/WebKurierDrone/actions/workflows/tests.yml/badge.svg" alt="Tests">
-  </a>
+  <img src="docs/hero_webkurierdrone.jpg" alt="WebKurierDrone — от мечты к технологиям" width="100%">
 </p>
 
 ---
