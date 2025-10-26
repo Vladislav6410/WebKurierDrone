@@ -1,1 +1,50 @@
-c
+{
+  "type": "FeatureCollection",
+  "name": "uas_zones_slo_sample",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "LJ-R101 Ljubljana Center",
+        "restriction": "No Fly Zone",
+        "country": "SI",
+        "max_altitude_m": 0,
+        "reason": "Government and embassy district"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [14.4900, 46.0500],
+            [14.5100, 46.0500],
+            [14.5100, 46.0600],
+            [14.4900, 46.0600],
+            [14.4900, 46.0500]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "LJ-R250 Slovenia Alps Test Area",
+        "restriction": "Altitude Limit",
+        "country": "SI",
+        "max_altitude_m": 150,
+        "reason": "Mountain region / partial visibility"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [14.2000, 46.3000],
+            [14.2500, 46.3000],
+            [14.2500, 46.3500],
+            [14.2000, 46.3500],
+            [14.2000, 46.3000]
+          ]
+        ]
+      }
+    }
+  ]
+}
