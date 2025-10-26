@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "name": "uas_zones_de_training",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "DE-TRAINING-AREA-01",
+        "restriction": "Training Area",
+        "country": "DE",
+        "allow_flight": true,
+        "max_altitude_m": 120,
+        "notice": "Synthetic training polygon for SITL/tests"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [13.5500, 52.4200],
+            [13.5800, 52.4200],
+            [13.5800, 52.4500],
+            [13.5500, 52.4500],
+            [13.5500, 52.4200]
+          ]
+        ]
+      }
+    }
+  ]
+}
