@@ -60,7 +60,6 @@ docker run -p 5000:5000 webkurier
 │   ├── __init__.py
 │   └── main.py
 ├── agents/
-│   ├──Drone с учpy
 │   ├── autopilot_ai/
 │   │   ├── autopilot.py
 │   │   └── index.html
