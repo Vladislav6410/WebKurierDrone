@@ -15,6 +15,39 @@ from typing import Dict, Any, Optional, Tuple, List
 from math import hypot
 from utils.pid import PID
 
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  NEW: COMPLIANCE CHECK — ПРОВЕРКА СООТВЕТСТВИЯ UAS ZONES                 ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+from shapely.geometry import Polygon
+from agents.compliance.uas_zones_loader import load_zones
+from agents.compliance.uas_zones_check import check_polygon_against_zones
+
+def ensure_zone_compliance(poly_coords_latlon, zone_files):
+    """
+    Проверка миссии на пересечение с запретными/ограниченными зонами.
+    
+    Args:
+        poly_coords_latlon: список координат [(lat, lon), ...]
+        zone_files: список путей к файлам с геозонами (GeoJSON/GeoPackage)
+    
+    Raises:
+        RuntimeError: если маршрут пересекает запретные зоны
+    """
+    # poly_coords_latlon = [(lat, lon), ...]
+    mission_poly = Polygon([(lon, lat) for (lat, lon) in poly_coords_latlon])
+    zones = load_zones(zone_files)
+    hits = check_polygon_against_zones(mission_poly, zones)
+    if hits:
+        names = ", ".join(h["zone"] for h in hits)
+        raise RuntimeError(
+            f"Маршрут пересекает запретные/ограниченные зоны: {names}. "
+            f"Скорректируйте полигон или получите разрешение."
+        )
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  КОНЕЦ СЕКЦИИ COMPLIANCE CHECK                                           ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+
 # ========================== КОНТРОЛЛЕРЫ ==========================
 @dataclass
 class AltitudeController:
