@@ -1,1 +1,50 @@
-b
+{
+  "type": "FeatureCollection",
+  "name": "uas_zones_pl_sample",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "PL-R95 Warsaw",
+        "restriction": "No Fly Zone",
+        "country": "PL",
+        "max_altitude_m": 0,
+        "reason": "Airport EPWA vicinity"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [20.9600, 52.1500],
+            [21.0000, 52.1500],
+            [21.0000, 52.1900],
+            [20.9600, 52.1900],
+            [20.9600, 52.1500]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "PL-R250 Mazovia",
+        "restriction": "Altitude Limit",
+        "country": "PL",
+        "max_altitude_m": 120,
+        "reason": "Regional controlled area"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [21.0500, 52.1000],
+            [21.1000, 52.1000],
+            [21.1000, 52.1400],
+            [21.0500, 52.1400],
+            [21.0500, 52.1000]
+          ]
+        ]
+      }
+    }
+  ]
+}
