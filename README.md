@@ -1,4 +1,4 @@
-# 🚁 WebKurierDrone v1.0
+🚁 WebKurierDrone v1.0
 
 🇷🇺 Интеллектуальная система автономных дронов
 
