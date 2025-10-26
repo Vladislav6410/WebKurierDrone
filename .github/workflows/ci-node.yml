@@ -12,17 +12,34 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20]  # тестируем на двух LTS версиях Node.js
+        node-version: [18, 20]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      # Если lock-файл ЕСТЬ — включаем кэш
+      - name: Use Node.js ${{ matrix.node-version }} (with cache)
+        if: ${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/npm-shrinkwrap.json') != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            **/package-lock.json
+
+      # Если lock-файла НЕТ — без кэша (чтобы не падало)
+      - name: Use Node.js ${{ matrix.node-version }} (no cache)
+        if: ${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/npm-shrinkwrap.json') == '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Сгенерировать lock-файл при его отсутствии
+      - name: Create lockfile if missing
+        if: ${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/npm-shrinkwrap.json') == '' }}
+        run: npm i --package-lock-only
 
       - name: Install dependencies
         run: |
@@ -36,7 +53,7 @@ jobs:
         run: |
           if npm run | grep -q " lint"; then
             npm run lint
-          elif [ -f .eslintrc.json ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ]; then
+          elif [ -f .eslintrc.json ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ] || [ -f eslint.config.js ]; then
             npx eslint .
           else
             echo "No eslint config or script, skipping lint."
@@ -47,7 +64,13 @@ jobs:
           if npm run | grep -q " test"; then
             npm test --silent
           elif [ -d test ] || [ -d tests ]; then
-            npx jest --ci || npx vitest run || echo "No known test runner configured."
+            if npx --yes jest --version >/dev/null 2>&1; then
+              npx jest --ci
+            elif npx --yes vitest --version >/dev/null 2>&1; then
+              npx vitest run
+            else
+              echo "No known test runner configured."
+            fi
           else
             echo "No tests found, skipping."
           fi
