@@ -209,4 +209,3 @@ WebKurier DroneAI Team
 🚀 Совместимость:
 WebKurierCore • WebKurierChain • WebKurierSecurity • TelegramBot • Dropbox
 
-Хочешь, чтобы я добавил вверху README баннер SVG с логотипом и секциями (Core ↔ Drone ↔ Chain ↔ Bot)?
