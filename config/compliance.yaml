@@ -1,0 +1,14 @@
+# какие зоны подгружать (разные страны/регионы можно включать/выключать)
+uas_zones:
+  enabled: true
+  files:
+    - "config/uas_zones/de_sample.geojson"
+    - "config/uas_zones/pl_sample.geojson"
+
+remote_id:
+  required_classes: ["C1","C2","C3"]  # ориентир; уточняется в зависимости от дрона/страны
+  enabled: false  # включать, когда подключите модуль
+
+insurance:
+  min_coverage_eur: 1000000  # для коммерции (типовые значения по ЕС)
+  evidence_required: true
