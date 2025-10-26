@@ -1,14 +1,47 @@
-# какие зоны подгружать (разные страны/регионы можно включать/выключать)
+# ==============================
+# COMPLIANCE CONFIGURATION FILE
+# ==============================
+# Назначение:
+#  Используется для проверки соответствия полётов требованиям:
+#   - геозоны (UAS zones)
+#   - Remote ID (идентификация дрона)
+#   - страхование (insurance)
+#   - будущие расширения: BVLOS, night flight, payload limits и т.п.
+# ==============================
+
+# --- Геозоны: какие зоны подгружать (разные страны/регионы можно включать/выключать)
 uas_zones:
   enabled: true
+  # список GeoJSON-файлов с зонами, в порядке приоритета
   files:
     - "config/uas_zones/de_sample.geojson"
     - "config/uas_zones/pl_sample.geojson"
+  # резервное поведение, если зоны не загружены или отсутствуют
+  fallback_policy: "warn"   # варианты: "warn", "block", "ignore"
 
+# --- Remote ID (идентификация дрона)
 remote_id:
-  required_classes: ["C1","C2","C3"]  # ориентир; уточняется в зависимости от дрона/страны
-  enabled: false  # включать, когда подключите модуль
+  enabled: false              # включить, когда модуль Remote ID подключён
+  required_classes: ["C1","C2","C3"]  # обязательные классы дронов по EU Regulation 2019/947
+  broadcast_format: "EU_STD" # варианты: "EU_STD", "ASTM_F3411", "NONE"
+  check_interval_s: 30       # частота проверки вещания Remote ID (сек)
+  fallback_policy: "warn"    # варианты: "warn", "block", "ignore"
 
+# --- Страхование (Insurance)
 insurance:
-  min_coverage_eur: 1000000  # для коммерции (типовые значения по ЕС)
-  evidence_required: true
+  enabled: true
+  min_coverage_eur: 1000000   # минимальная страховая сумма (по нормам ЕС)
+  evidence_required: true     # требуется ли загрузка подтверждения страховки (PDF/номер)
+  expire_warning_days: 30     # за сколько дней до истечения срока выдавать предупреждение
+
+# --- Дополнительно (опционально)
+regulations:
+  country: "DE"               # текущая страна полётов (ISO-код)
+  flight_mode: "VLOS"         # варианты: "VLOS", "BVLOS", "AUTO", "TEST"
+  altitude_limit_m: 120       # ограничение по высоте
+  speed_limit_ms: 20          # ограничение по скорости
+  logging: true               # логировать нарушения compliance
+
+# --- Версия формата
+version: 1.1
+last_update: "2025-10-26"
