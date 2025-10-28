@@ -16,6 +16,7 @@ uas_zones:
   files:
     - "config/uas_zones/de_sample.geojson"
     - "config/uas_zones/pl_sample.geojson"
+    - "config/uas_zones/slo_sample.geojson"
   # резервное поведение, если зоны не загружены или отсутствуют
   fallback_policy: "warn"   # варианты: "warn", "block", "ignore"
 
