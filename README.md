@@ -1,8 +1,13 @@
 <p align="center">
-  <img src="docs/banner_drone_ai.svg" width="900" alt="WebKurierDrone Banner"/>
+  <img src="docs/banner_drone_ai.svg?v=2" width="880" alt="WebKurierDrone Banner" style="border-radius:12px;box-shadow:0 0 25px rgba(0,255,255,0.15);"/>
 </p>
 
-🚁 **WebKurierDrone v1.1 — Геодезия, 3D-моделирование и AI**
+<h1 align="center">🚁 WebKurierDrone v1.2 — Геодезия • 3D-моделирование • AI</h1>
+
+<p align="center">
+  <b>Интеллектуальная система автономного управления дронами нового поколения</b><br>
+  <sub>Core • Drone • Chain • Bot — единая экосистема WebKurier</sub>
+</p>
  **WebKurierDrone v1.1 — Геодезия, 3D-моделирование и AI**
 
 Интеллектуальная система управления автономными дронами для:
