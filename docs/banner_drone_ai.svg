@@ -1,62 +1,102 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360">
   <defs>
-    <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0d111a"/>
-      <stop offset="100%" stop-color="#1a2233"/>
+    <linearGradient id="metal-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A2233"/>
+      <stop offset="100%" stop-color="#0D111A"/>
     </linearGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
+
+    <filter id="glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
+    <filter id="glow-moderate" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0FFFF"/>
+      <stop offset="100%" stop-color="#A5C8E5"/>
+    </linearGradient>
+
+    <linearGradient id="core-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#00A2FF"/>
+        <stop offset="100%" stop-color="#0066AA"/>
+    </linearGradient>
+    <linearGradient id="drone-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#00FFFF"/>
+        <stop offset="100%" stop-color="#00BFFF"/>
+    </linearGradient>
+    <linearGradient id="chain-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#00FF00"/>
+        <stop offset="100%" stop-color="#00AA00"/>
+    </linearGradient>
+    <linearGradient id="bot-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFA500"/>
+        <stop offset="100%" stop-color="#D2691E"/>
+    </linearGradient>
+
   </defs>
 
-  <rect width="1200" height="360" fill="url(#metal)" rx="20"/>
+  <rect width="1200" height="360" fill="#2D3A4B" rx="20" stroke="#10141D" stroke-width="6"/>
+  <rect x="3" y="3" width="1194" height="354" fill="url(#metal-dark)" rx="17" stroke="#333333" stroke-width="1"/>
 
-  <!-- Заголовок -->
-  <text x="50%" y="90" text-anchor="middle" font-size="54" font-family="Segoe UI, Roboto, sans-serif"
-        fill="#B8DFFF" filter="url(#glow)">WebKurierDrone</text>
+  <text x="50%" y="90" text-anchor="middle" font-size="70" font-weight="bold" font-family="Arial, sans-serif"
+        fill="url(#text-gradient)" filter="url(#glow-strong)">WebKurierDrone</text>
 
-  <!-- Core -->
-  <g transform="translate(180, 210)">
-    <rect x="-40" y="-40" width="80" height="80" rx="12"
-          stroke="#3AA6FF" stroke-width="4" fill="none" filter="url(#glow)"/>
-    <text x="0" y="70" text-anchor="middle" fill="#3AA6FF" font-size="24"
-          font-family="Segoe UI, Roboto">Core</text>
+  <path d="M 300 115 Q 600 130 900 115" stroke="#334A66" stroke-width="2" fill="none"/>
+
+  ---
+
+  <g transform="translate(180, 200)" filter="url(#glow-moderate)">
+    <rect x="-40" y="-40" width="80" height="80" rx="8" fill="url(#core-grad)" stroke="#00CFFF" stroke-width="3"/>
+    <rect x="-30" y="-30" width="60" height="60" rx="4" fill="#111A29"/>
+    <rect x="-20" y="-20" width="40" height="40" fill="#00CFFF"/>
+    <rect x="-48" y="-30" width="8" height="60" fill="url(#core-grad)"/>
+    <rect x="40" y="-30" width="8" height="60" fill="url(#core-grad)"/>
+    <text x="0" y="90" text-anchor="middle" fill="#00CFFF" font-size="30" font-weight="bold"
+          font-family="Arial, sans-serif">Core</text>
   </g>
 
-  <!-- Drone -->
-  <g transform="translate(440, 210)">
-    <circle cx="0" cy="0" r="36" stroke="#00E5FF" stroke-width="4" fill="none" filter="url(#glow)"/>
-    <line x1="-36" y1="0" x2="-60" y2="0" stroke="#00E5FF" stroke-width="4"/>
-    <line x1="36" y1="0" x2="60" y2="0" stroke="#00E5FF" stroke-width="4"/>
-    <text x="0" y="70" text-anchor="middle" fill="#00E5FF" font-size="24"
-          font-family="Segoe UI, Roboto">Drone</text>
+  <g transform="translate(440, 200)" filter="url(#glow-moderate)">
+    <rect x="-50" y="-5" width="100" height="10" rx="3" fill="url(#drone-grad)" stroke="#00FFFF" stroke-width="2"/>
+    <rect x="-5" y="-50" width="10" height="100" rx="3" fill="url(#drone-grad)" stroke="#00FFFF" stroke-width="2"/>
+    <circle cx="0" cy="0" r="15" fill="#111A29" stroke="#00FFFF" stroke-width="2"/>
+    <ellipse cx="40" cy="-40" rx="15" ry="5" fill="#00BFFF" opacity="0.7"/>
+    <ellipse cx="-40" cy="40" rx="15" ry="5" fill="#00BFFF" opacity="0.7"/>
+    <text x="0" y="90" text-anchor="middle" fill="#00FFFF" font-size="30" font-weight="bold"
+          font-family="Arial, sans-serif">Drone</text>
   </g>
 
-  <!-- Chain -->
-  <g transform="translate(720, 210)">
-    <path d="M-30,0 a30,30 0 1,1 60,0 a30,30 0 1,1 -60,0z"
-          stroke="#7CFF4F" stroke-width="6" fill="none" filter="url(#glow)"/>
-    <text x="0" y="70" text-anchor="middle" fill="#7CFF4F" font-size="24"
-          font-family="Segoe UI, Roboto">Chain</text>
+  <g transform="translate(720, 200)">
+    <g filter="url(#glow-moderate)">
+      <path d="M -30 0 L -10 0 A 20 20 0 1 1 -10 40 L -30 40 A 20 20 0 1 1 -30 0 Z" fill="url(#chain-grad)" stroke="#AAFF00" stroke-width="2"/>
+      <path d="M 10 0 L 30 0 A 20 20 0 1 1 30 40 L 10 40 A 20 20 0 1 1 10 0 Z" fill="url(#chain-grad)" stroke="#AAFF00" stroke-width="2" transform="rotate(90, 20, 20)"/>
+    </g>
+    <text x="0" y="90" text-anchor="middle" fill="#AAFF00" font-size="30" font-weight="bold"
+          font-family="Arial, sans-serif">Chain</text>
   </g>
 
-  <!-- Bot -->
-  <g transform="translate(1000, 210)">
-    <rect x="-35" y="-35" width="70" height="70" rx="15"
-          stroke="#FFA94D" stroke-width="4" fill="none" filter="url(#glow)"/>
-    <circle cx="0" cy="-55" r="5" fill="#FFA94D"/>
-    <text x="0" y="70" text-anchor="middle" fill="#FFA94D" font-size="24"
-          font-family="Segoe UI, Roboto">Bot</text>
+  <g transform="translate(1000, 200)" filter="url(#glow-moderate)">
+    <rect x="-40" y="-50" width="80" height="50" rx="10" fill="url(#bot-grad)" stroke="#FF8C00" stroke-width="3"/>
+    <rect x="-30" y="0" width="60" height="40" rx="8" fill="#111A29" stroke="#FF8C00" stroke-width="2"/>
+    <rect x="-25" y="-35" width="15" height="15" rx="3" fill="#00FFFF"/>
+    <rect x="10" y="-35" width="15" height="15" rx="3" fill="#00FFFF"/>
+    <path d="M -20 -15 C -10 -5, 10 -5, 20 -15" stroke="#FFA500" stroke-width="3" fill="none"/>
+    <text x="0" y="90" text-anchor="middle" fill="#FF8C00" font-size="30" font-weight="bold"
+          font-family="Arial, sans-serif">Bot</text>
   </g>
 
-  <!-- Стрелки -->
-  <g stroke-width="3" stroke-linecap="round" filter="url(#glow)">
-    <line x1="260" y1="210" x2="380" y2="210" stroke="#00E5FF"/>
-    <line x1="540" y1="210" x2="660" y2="210" stroke="#7CFF4F"/>
-    <line x1="820" y1="210" x2="940" y2="210" stroke="#FFA94D"/>
-    <polygon points="380,205 395,210 380,215" fill="#00E5FF"/>
-    <polygon points="660,205 675,210 660,215" fill="#7CFF4F"/>
-    <polygon points="940,205 955,210 940,215" fill="#FFA94D"/>
+  ---
+
+  <g stroke-width="6" stroke-linecap="round" filter="url(#glow-moderate)">
+    <line x1="260" y1="200" x2="380" y2="200" stroke="url(#drone-grad)"/>
+    <polygon points="380,195 395,200 380,205" fill="url(#drone-grad)"/>
+
+    <line x1="500" y1="200" x2="660" y2="200" stroke="url(#chain-grad)"/>
+    <polygon points="660,195 675,200 660,205" fill="url(#chain-grad)"/>
+
+    <line x1="780" y1="200" x2="940" y2="200" stroke="url(#bot-grad)"/>
+    <polygon points="940,195 955,200 940,205" fill="url(#bot-grad)"/>
   </g>
 </svg>
