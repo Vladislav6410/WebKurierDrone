@@ -1,3 +1,62 @@
-<div class="banner">
-  <img src="../assets/images/banner_drone_ai.png" alt="WebKurierDrone Banner">
-</div> 
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360">
+  <defs>
+    <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d111a"/>
+      <stop offset="100%" stop-color="#1a2233"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="360" fill="url(#metal)" rx="20"/>
+
+  <!-- Заголовок -->
+  <text x="50%" y="90" text-anchor="middle" font-size="54" font-family="Segoe UI, Roboto, sans-serif"
+        fill="#B8DFFF" filter="url(#glow)">WebKurierDrone</text>
+
+  <!-- Core -->
+  <g transform="translate(180, 210)">
+    <rect x="-40" y="-40" width="80" height="80" rx="12"
+          stroke="#3AA6FF" stroke-width="4" fill="none" filter="url(#glow)"/>
+    <text x="0" y="70" text-anchor="middle" fill="#3AA6FF" font-size="24"
+          font-family="Segoe UI, Roboto">Core</text>
+  </g>
+
+  <!-- Drone -->
+  <g transform="translate(440, 210)">
+    <circle cx="0" cy="0" r="36" stroke="#00E5FF" stroke-width="4" fill="none" filter="url(#glow)"/>
+    <line x1="-36" y1="0" x2="-60" y2="0" stroke="#00E5FF" stroke-width="4"/>
+    <line x1="36" y1="0" x2="60" y2="0" stroke="#00E5FF" stroke-width="4"/>
+    <text x="0" y="70" text-anchor="middle" fill="#00E5FF" font-size="24"
+          font-family="Segoe UI, Roboto">Drone</text>
+  </g>
+
+  <!-- Chain -->
+  <g transform="translate(720, 210)">
+    <path d="M-30,0 a30,30 0 1,1 60,0 a30,30 0 1,1 -60,0z"
+          stroke="#7CFF4F" stroke-width="6" fill="none" filter="url(#glow)"/>
+    <text x="0" y="70" text-anchor="middle" fill="#7CFF4F" font-size="24"
+          font-family="Segoe UI, Roboto">Chain</text>
+  </g>
+
+  <!-- Bot -->
+  <g transform="translate(1000, 210)">
+    <rect x="-35" y="-35" width="70" height="70" rx="15"
+          stroke="#FFA94D" stroke-width="4" fill="none" filter="url(#glow)"/>
+    <circle cx="0" cy="-55" r="5" fill="#FFA94D"/>
+    <text x="0" y="70" text-anchor="middle" fill="#FFA94D" font-size="24"
+          font-family="Segoe UI, Roboto">Bot</text>
+  </g>
+
+  <!-- Стрелки -->
+  <g stroke-width="3" stroke-linecap="round" filter="url(#glow)">
+    <line x1="260" y1="210" x2="380" y2="210" stroke="#00E5FF"/>
+    <line x1="540" y1="210" x2="660" y2="210" stroke="#7CFF4F"/>
+    <line x1="820" y1="210" x2="940" y2="210" stroke="#FFA94D"/>
+    <polygon points="380,205 395,210 380,215" fill="#00E5FF"/>
+    <polygon points="660,205 675,210 660,215" fill="#7CFF4F"/>
+    <polygon points="940,205 955,210 940,215" fill="#FFA94D"/>
+  </g>
+</svg>
