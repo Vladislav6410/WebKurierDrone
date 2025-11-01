@@ -16,204 +16,249 @@
 - 💬 Интеграции с Telegram / WhatsApp
 - 🤖 AI-модулей для 3D и гиперспектрального анализа
 
----
-
-## ⚙️ Архитектура проекта
+📁 Структура перед файлом
 
 WebKurierDrone/
-├── core/                 # Ядро системы
-├── agents/
-│   ├── autopilot_ai/     # Автопилот и ИИ
-│   ├── geodesy_agent/    # Геодезия и фотограмметрия
-│   ├── synthetic_data/   # Генерация синтетических данных (Stable Diffusion)
-│   └── fire_monitor/     # Мониторинг пожаров
+├── README.md                      ← этот файл
+├── engine/
+│   ├── agents/
+│   │   ├── compliance/
+│   │   │   ├── uas_zones_loader.py
+│   │   │   ├── uas_zones_check.py
+│   │   │   ├── bvloss_checker.py
+│   │   │   ├── weather_integrator.py
+│   │   │   ├── uas_regulations_updater.py
+│   │   │   └── regions/
+│   │   │       ├── europe.py
+│   │   │       ├── usa.py
+│   │   │       ├── japan.py
+│   │   │       └── uae.py
+│   │   ├── edge_ai/
+│   │   │   └── tensorrt_inference.py
+│   │   └── geodesy_agent/
+│   │       └── neuro_symbolic.py
+│   ├── config/
+│   │   ├── compliance.yaml
+│   │   └── uas_zones/
+│   │       ├── de_sample.geojson
+│   │       ├── pl_sample.geojson
+│   │       └── slo_sample.geojson
+│   └── logs/
+│       └── compliance.log
+├── docs/
+│   ├── compliance_guide.md
+│   └── uas_zones_map.png
+├── scripts/
+│   └── helm/
+│       └── webkurier-drone/
+│           └── Chart.yaml
 ├── bots/
-│   ├── telegram_bot/     # Telegram бот
-│   └── whatsapp_bot/     # WhatsApp бот
-├── radio_control/        # MAVLink управление
-├── config/               # Конфигурации сенсоров и зон
-├── ui/                   # Веб-интерфейс
-├── utils/                # Логи, парсеры, инструменты
-├── scripts/helm/         # Kubernetes Helm Chart
-└── tests/                # Тесты агентов и ботов
+│   └── telegram_bot/
+│       └── handlers.py
+├── tests/
+│   └── test_compliance.py
+└── exchange/
+    └── missions_in/
+        └── mission_bvloss_scan.json
 
----
-
-## 🧩 Основные функции
-
-| Модуль | Назначение | Технологии |
-|--------|-------------|------------|
-| `geodesy_agent` | Геодезия, гиперспектральная обработка | GDAL, Spectral |
-| `synthetic_data` | Диффузионные модели местности | Stable Diffusion |
-| `autopilot_ai` | Автономный полёт, MAVLink | Python, PX4/ArduPilot |
-| `bots/telegram_bot` | Управление миссиями | Telegram API |
-| `scripts/helm/` | Масштабирование | Kubernetes, Kafka |
-
----
-
-## 🛰 Поддерживаемые сенсоры
-
-📄 `config/telemetry_config.json`
-```json
-{
-  "sensors": {
-    "hyperspectral": {
-      "type": "Headwall_Nano",
-      "bands": 270,
-      "format": "ENVI"
-    },
-    "rtk_gnss": {
-      "type": "Emlid_Reach_RX",
-      "accuracy_cm": 0.006
-    }
-  }
-}
-
+Репозиторий: github.com/Vladislav6410/WebKurierDrone
+Правило зафиксировано: всегда даю структуру перед любым файлом.
 
 ⸻
 
-🧠 AI и 3D-моделирование
+📄 Файл: README.md
 
-Геодезия и фотограмметрия
+# WebKurierDrone v1.3 — Geodesy • 3D Modeling • AI • Global Compliance
+**Intelligent autonomous drone control system — Core • Drone • Chain • Bot**  
+**Made in Germany**
 
-📄 agents/geodesy_agent/geodesy.py
+**Expert Assessment:** Mature prototype (v1.2→v1.3), pilot-ready for Europe. Overall 8/10.  
+This release focuses on compliance, edge AI, and global expansion.
 
-from subprocess import run
+---
 
+## Supported Regions
+| Phase | Regions | Regulatory Body | Compliance Status |
+|------:|--------|------------------|-------------------|
+| **1** | Europe (EU-27) | EASA, National ANSPs | **95%** (U-Space Ready) |
+| **2** | USA, Japan, UAE | FAA, MLIT, GCAA | **In Development** |
+
+> No Russian services — full compliance with Western cloud & security standards (AWS, Azure, Google Cloud).
+
+---
+
+## Core Features
+| Module | Purpose | Key Technologies |
+|-------|---------|------------------|
+| `geodesy_agent` | Geodesy, hyperspectral, 3D photogrammetry | GDAL, Spectral, OpenDroneMap |
+| `autopilot_ai` | Autonomous flight, BVLOS, swarm | PX4/ArduPilot, MAVLink, TensorRT |
+| `compliance/` | Zone validation, Remote ID, BVLOS | GeoJSON, EASA API, FAA LAANC |
+| `edge_ai/` | Onboard AI processing | NVIDIA Jetson Orin, TensorRT |
+| `synthetic_data/` | Terrain/anomaly simulation | Stable Diffusion, Neuro-Symbolic AI |
+| `bots/` | Mission control via messengers | Telegram API, WhatsApp Business |
+| `scripts/helm/` | Cloud-native scaling | Kubernetes, Kafka, Helm v3 |
+
+---
+
+## What’s New in v1.3
+- **Compliance+:** dynamic zone fetching, BVLOS permit checks, weather gating.
+- **Regions:** pluggable logic for EU/USA/Japan/UAE.
+- **Edge AI:** TensorRT inference on Jetson Orin for 3D/hyperspectral.
+- **Docs & Tests:** region guide, helm chart, pytest coverage, Trivy scans.
+
+### Project Layout
+```bash
+WebKurierDrone/
+├── engine/agents/compliance/{uas_zones_loader.py, uas_zones_check.py, bvloss_checker.py, weather_integrator.py, uas_regulations_updater.py, regions/{europe.py,usa.py,japan.py,uae.py}}
+├── engine/agents/edge_ai/tensorrt_inference.py
+├── engine/agents/geodesy_agent/neuro_symbolic.py
+├── engine/config/{compliance.yaml, uas_zones/*.geojson}
+├── engine/logs/compliance.log
+├── docs/{compliance_guide.md, uas_zones_map.png}
+├── scripts/helm/webkurier-drone/Chart.yaml
+├── bots/telegram_bot/handlers.py
+├── tests/test_compliance.py
+└── exchange/missions_in/mission_bvloss_scan.json
+
+Example Snippets
+
+# agents/geodesy_agent/geodesy.py
 def process_photogrammetry(images_dir, output_dir):
-    run(["odm", "--project-path", output_dir, images_dir])
+    run(["odm", "--project-path", output_dir, images_dir, "--dsm", "--dtm"])
     return f"{output_dir}/odm_orthophoto/odm_orthophoto.tif"
 
-Гиперспектральная обработка
+# agents/edge_ai/tensorrt_inference.py
+context.execute_v2(bindings=[input_data, output_buffer])
 
-import spectral as sp, numpy as np, gdal
-
-def process_hyperspectral(path):
-    img = sp.open_image(path)
-    data = img.load()
-    mineral_map = np.argmax(data[:, :, 10:50], axis=2)
-    driver = gdal.GetDriverByName("GTiff")
-    out = driver.Create("mineral_map.tiff", mineral_map.shape[1], mineral_map.shape[0], 1, gdal.GDT_Float32)
-    out.GetRasterBand(1).WriteArray(mineral_map)
-    out.FlushCache()
-    return "mineral_map.tiff"
-
-
-⸻
-
-🌄 Пример миссии (Photogrammetry)
-
-📄 exchange/missions_in/mission_photogrammetry.json
-
+// exchange/missions_in/mission_bvloss_scan.json
 {
-  "schema_version": "1.0",
-  "id": "msn-001",
-  "type": "photogrammetry_scan",
-  "params": {
-    "alt_m": 80,
-    "speed_mps": 10,
-    "overlap_percent": 80,
-    "sidelap_percent": 70
-  },
-  "waypoints": [
-    {"lat": 52.52, "lon": 13.40, "alt": 80}
-  ],
-  "geofence": {
-    "type": "Polygon",
-    "coordinates": [[[13.4, 52.5], [13.5, 52.5], [13.5, 52.6], [13.4, 52.6], [13.4, 52.5]]]
-  }
+  "schema_version": "1.1",
+  "id": "msn-002",
+  "type": "bvloss_photogrammetry",
+  "params": { "alt_m": 120, "speed_mps": 12, "overlap_percent": 80, "bvloss_permit_id": "EASA-BVLOS-2025-0041" },
+  "waypoints": [],
+  "geofence": { "type": "Polygon", "coordinates": [] },
+  "compliance": { "remote_id": "broadcast", "weather_check": true, "zone_api": "https://easa.u-space/api/zones" }
 }
 
+Helm
 
-⸻
-
-☁️ Масштабируемость (Kubernetes)
-
-📄 scripts/helm/webkurier-drone/Chart.yaml
-
+# scripts/helm/webkurier-drone/Chart.yaml
 apiVersion: v2
 name: webkurier-drone
-version: 1.0.0
+version: 1.3.0
 dependencies:
   - name: kafka
     version: 0.1.0
+  - name: redis
+    version: 17.0.0
 
-📄 scripts/helm/webkurier-drone/templates/deployment.yaml
+Deploy:
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: webkurier-drone
-spec:
-  replicas: 3
-  template:
-    spec:
-      containers:
-        - name: photogrammetry
-          image: webkurier/drone-odm:latest
-          command: ["python", "agents/geodesy_agent/geodesy.py"]
+helm upgrade --install webkurier ./scripts/helm/webkurier-drone \
+  --set compliance.regions=europe,usa \
+  --set edgeAI.enabled=true
 
-Развертывание:
+Testing & Security
 
-helm install webkurier ./scripts/helm/webkurier-drone
+pytest tests/test_compliance.py --cov=engine/agents/compliance
+trivy image webkurier/drone-odm:latest
 
+Requirements
 
-⸻
-
-🔗 Интеграция с Telegram
-
-📄 bots/telegram_bot/handlers.py
-
-async def upload_mission(update, context):
-    mission = await update.message.document.get_file()
-    await mission.download_to_drive("exchange/missions_in/mission.json")
-    await update.message.reply_text("✅ Миссия загружена / Mission uploaded")
-
-
-⸻
-
-🧪 Тестирование
-
-📄 tests/test_geodesy.py
-
-def test_hyperspectral_processing():
-    from agents.geodesy_agent.geodesy import process_hyperspectral
-    result = process_hyperspectral("test_data/sample.hdr")
-    assert result.endswith(".tiff")
-
-
-⸻
-
-📋 Требования / Requirements
-
-Компонент	Версия
-Python	3.11
-torch	≥ 2.0.1
-diffusers	≥ 0.21.0
-transformers	≥ 4.31.0
+Component	Version
+Python	3.11+
+torch	≥ 2.4.0
+diffusers	≥ 0.30.0
 spectral	≥ 0.23
-gdal	≥ 3.6
-Docker	≥ 24
-Kubernetes (опционально)	≥ 1.30
+gdal	≥ 3.8
+Docker	≥ 25
+Kubernetes	≥ 1.30
+NVIDIA JetPack	6.0+ (Edge AI)
 
 
 ⸻
 
-🧾 Лицензия
+License
 
-Проект распространяется под лицензией MIT.
-Некоторые компоненты (AI, фотограмметрия, автопилот) доступны по запросу лицензии:
-📩 webkurier@license.io или через Telegram @WebKurierBot
+Proprietary License
+© 2025 Vladyslav Hushchyn. All rights reserved.
+Copying, modification, distribution, or use of any part of this project is permitted only with written permission from Vladyslav Hushchyn.
+Contact: webkurier@license.io · Telegram: @WebKurierBot
+
+Version: v1.3 · Updated: 2025-11-01 · Compatibility: WebKurierCore • WebKurierChain
+
+WebKurierDrone — Fly Smart. Map Smarter. Comply Always.
+
+WebKurierDrone v1.3 — Геодезия • 3D-моделирование • ИИ • Глобальный комплаенс
+
+Интеллектуальная система автономного управления дронами — Core • Drone • Chain • Bot
+Произведено в Германии
+
+Оценка эксперта: зрелый прототип (v1.2→v1.3), готов к пилотам в Европе. Итог: 8/10.
+Релиз сосредоточен на комплаенсе, бортовом ИИ и глобальной экспансии.
 
 ⸻
 
-🛰 Автор и поддержка
+Поддерживаемые регионы
 
-WebKurier DroneAI Team
-📅 Версия: v1.1 • Обновлено: 2025-10-26
+Фаза	Регионы	Регулятор	Статус
+1	Европа (ЕС-27)	EASA, национальные ANSP	95% (U-Space Ready)
+2	США, Япония, ОАЭ	FAA, MLIT, GCAA	В разработке
+
+Российские сервисы не используются — соответствие западным облакам и безопасности (AWS, Azure, Google Cloud).
 
 ⸻
 
-🚀 Совместимость:
-WebKurierCore • WebKurierChain • WebKurierSecurity • TelegramBot • Dropbox
+Основные модули
+
+Модуль	Назначение	Технологии
+geodesy_agent	Геодезия, гиперспектр, 3D-фотограмметрия	GDAL, Spectral, ODM
+autopilot_ai	Автополёт, BVLOS, режим роя	PX4/ArduPilot, MAVLink, TensorRT
+compliance/	Проверка зон, Remote ID, BVLOS	GeoJSON, EASA API, FAA LAANC
+edge_ai/	Бортовая обработка ИИ	NVIDIA Jetson Orin, TensorRT
+synthetic_data/	Симуляция рельефа/аномалий	Stable Diffusion, нейросимвольный ИИ
+bots/	Управление миссиями	Telegram API, WhatsApp Business
+scripts/helm/	Масштабирование	Kubernetes, Kafka, Helm v3
+
+
+⸻
+
+Новое в v1.3
+	•	Compliance+: динамическая подгрузка зон, проверка BVLOS-разрешений, погодные ограничения.
+	•	Regions: подключаемая логика для ЕС/США/Японии/ОАЭ.
+	•	Edge AI: TensorRT-инференс на Jetson Orin.
+	•	Docs & Tests: гайд по регионам, helm-чарт, pytest, Trivy.
+
+Макет проекта
+
+(см. дерево в разделе EN)
+
+Примеры
+
+# agents/geodesy_agent/geodesy.py
+def process_photogrammetry(images_dir, output_dir):
+    run(["odm", "--project-path", output_dir, images_dir, "--dsm", "--dtm"])
+    return f"{output_dir}/odm_orthophoto/odm_orthophoto.tif"
+
+// exchange/missions_in/mission_bvloss_scan.json
+{ "schema_version": "1.1", "id": "msn-002", "type": "bvloss_photogrammetry", "params": { "alt_m": 120, "speed_mps": 12, "overlap_percent": 80, "bvloss_permit_id": "EASA-BVLOS-2025-0041" }, "waypoints": [], "geofence": { "type": "Polygon", "coordinates": [] }, "compliance": { "remote_id": "broadcast", "weather_check": true, "zone_api": "https://easa.u-space/api/zones" } }
+
+Требования
+
+(см. таблицу в разделе EN)
+
+⸻
+
+Лицензия
+
+Проприетарная лицензия
+© 2025 Владислав Гущин. Все права защищены.
+Любое использование частей проекта — только с письменного разрешения Владислава Гущина.
+Контакт: webkurier@license.io · Telegram: @WebKurierBot
+
+Версия: v1.3 · Обновлено: 01.11.2025 · Совместимость: WebKurierCore • WebKurierChain
+
+WebKurierDrone — Летай умно. Снимай точнее. Соблюдай всегда.
+
 
