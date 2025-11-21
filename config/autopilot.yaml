@@ -1,0 +1,107 @@
+# ==========================================================
+#  AUTOPILOT CONFIG — WebKurierDrone (Queen / Swarm)
+#  Поддерживает: 3–24 вертикальных моторов, push/pull,
+#  1–24 горизонтальных моторов, турбинки, гибридный VTOL
+# ==========================================================
+
+general:
+  drone_id: "queen-001"
+  tick_rate_hz: 100
+  failsafe_thresholds:
+    low_battery_v: 3.3
+    gps_loss_s: 5
+    esc_overheat_c: 85
+
+# ----------------------------------------------------------
+#  MOTOR SYSTEM CONFIGURATION
+# ----------------------------------------------------------
+motor_system:
+
+  # Общее количество
+  vertical_motors_count: 18
+  horizontal_motors_count: 2
+  turbo_motors_count: 3  # elevator_l, elevator_r, tail
+
+  # Push/Pull пары (для вертикальных и горизонтальных)
+  push_pull_pairs: true
+
+  # Максимум
+  max_total_motors: 32
+
+  # Группировка вертикальных моторов для устойчивости и управления
+  # Пример: 18 моторов → 3 по 6
+  vertical_groups:
+    - group_id: G1
+      motors: [1, 2, 3, 4, 5, 6]
+    - group_id: G2
+      motors: [7, 8, 9, 10, 11, 12]
+    - group_id: G3
+      motors: [13, 14, 15, 16, 17, 18]
+
+  # Горизонтальные моторы (тяни/толкай)
+  horizontal:
+    - id: H1
+      angle_deg: 0        # прямолинейный режим
+      angle_min: -90      # оттолкнуть вверх
+      angle_max: 90       # поджать вниз
+    - id: H2
+      angle_deg: 0
+      angle_min: -90
+      angle_max: 90
+
+  # Турбинки (элероны/рули высоты)
+  turbo:
+    - id: T_left
+      role: "elevator"
+      angle_min: -45
+      angle_max: 45
+    - id: T_right
+      role: "elevator"
+      angle_min: -45
+      angle_max: 45
+    - id: T_tail
+      role: "yaw"
+      angle_min: -60
+      angle_max: 60
+
+  diagnostics:
+    failure_tolerance: 2
+    monitor_interval_ms: 200
+
+# ----------------------------------------------------------
+#  FLIGHT MODES
+# ----------------------------------------------------------
+modes:
+  default_mode: "manual"
+
+  manual:
+    allow_angle_control: true
+    allow_thrust_control: true
+
+  geo:
+    default_alt_m: 120
+    gsd_m: 0.05
+    overlap_front: 0.8
+    overlap_side: 0.7
+
+  acro:
+    max_roll_deg: 45
+    max_pitch_deg: 35
+    max_yaw_rate_dps: 120
+    max_speed_mps: 28
+
+  swarm:
+    role: "queen"
+    comm_range_m: 800
+    collision_min_dist_m: 12
+    leader_enabled: true
+
+# ----------------------------------------------------------
+#  NAVIGATOR / ROUTING ENGINE
+# ----------------------------------------------------------
+navigator:
+  route_engine_url: "http://localhost:9000/api/route"
+  default_threshold_m: 3
+  geofence:
+    no_fly_zones: []
+  mission_profile: "geo_base"
