@@ -1,0 +1,107 @@
+# Конфигурация навигатора WebKurierDrone
+# Описывает правила маршрутизации, поведение waypoints,
+# работу с геозонами, интеграцию с картами,
+# RTK/GPS/GNSS источники и источники данных беспилотника.
+
+navigator:
+  # Основной профиль навигации (важно для выбора стратегии автопилотами)
+  profile: "standard"   # options: standard | geodesy | patrol | delivery | swarm
+
+  # Основные параметры маршрутизации
+  routing:
+    waypoint_threshold_m: 5          # Радиус достижения точки
+    max_route_length_km: 50          # Ограничение длины маршрута
+    dynamic_replanning: true         # Включить динамическую перепрокладку маршрута
+    replanning_interval_s: 1         # Частота проверки (в секундах)
+    altitude_floor_m: 30             # Минимальная высота
+    altitude_ceiling_m: 120          # Максимальная высота (EASA)
+    speed_mps: 12                    # Стандартная скорость
+
+  # Геозоны — загружаются динамически или статически
+  geofence:
+    enabled: true
+    default_action: "avoid"          # avoid | stop | reroute
+    zones:
+      # Пример зоны — можно удалить, оставить пустым или заменить GeoJSON
+      - name: "NFZ Airfield"
+        type: "polygon"
+        coordinates:
+          - [51.2345, 8.0123]
+          - [51.2355, 8.0133]
+          - [51.2330, 8.0141]
+          - [51.2312, 8.0119]
+
+  # Источники данных для навигации
+  sensors:
+    gps:
+      enabled: true
+      min_satellites: 8
+      rtk_enabled: true
+      rtk_timeout_s: 10
+      accuracy_required_m: 1.0
+
+    imu:
+      enabled: true
+      drift_correction: true
+
+    compass:
+      enabled: true
+      auto_declination: true
+
+    stereo_vision:
+      enabled: true
+      baseline_cm: 12
+      obstacle_detection_m: 60
+      use_akida_if_available: false   # Если Akida или Jetson — можно включить
+
+    lidar:
+      enabled: false                  # Default: выключен (дорого)
+      range_m: 120
+
+  # Алгоритмы навигации
+  algorithms:
+    waypoint_controller: "PID"        # PID | LQR | MPC
+    obstacle_avoidance: "vision"      # lidar | vision | hybrid
+    path_planning: "A*"               # A* | RRT* | Dijkstra | Hybrid-A*
+    optimization:
+      wind_compensation: true
+      battery_awareness: true
+      terrain_following: false        # true = полезно в горах/лесах
+
+  # Профили миссий
+  mission_profiles:
+    geodesy:
+      gsd_m: 0.05
+      front_overlap: 0.8
+      side_overlap: 0.7
+      altitude_m: 100
+      pattern: "lawnmower"           # lawnmower | grid | spiral
+
+    patrol:
+      hold_time_s: 10
+      revisit_interval_min: 20
+      randomize_points: false
+
+    delivery:
+      landing_accuracy_m: 1.5
+      drop_height_m: 5
+      failover_action: "return_home" # return_home | loiter | land
+
+    swarm:
+      role: "worker"                 # queen | worker | relay
+      keep_distance_m: 20
+      formation: "dynamic-V"         # V | line | circle | dynamic-V
+
+  # Базовые координаты (если нет GPS или при симуляции)
+  home_point:
+    lat: 51.77352
+    lon: 8.03870
+    alt_m: 0
+
+  # Серверные интеграции
+  integrations:
+    map_tile_server: "https://maps.webkurier.com/tiles"
+    route_planner_api: "https://api.webkurier.com/route"
+    weather_api: "https://api.webkurier.com/weather"
+    traffic_api: "https://api.webkurier.com/uas_traffic"
+    u_space_api: "https://u-space.webkurier.com/zones"
