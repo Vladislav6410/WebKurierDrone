@@ -44,8 +44,8 @@ WebKurierHybrid — выполняет сквозной анализ и орке
 сравнение миссий по времени,
 объединённые отчёты (дрон + блокчейн + бизнес),
 AI-анализ через ExpertAgent.
-✨ Key Modules / Основные модули
-🧭 Autopilot Modes / Режимы автопилота
+# ✨ Key Modules / Основные модули
+# 🧭 Autopilot Modes / Режимы автопилота
 
 Backend for autopilot agents and flight modes:
 
@@ -56,7 +56,7 @@ acro_mode — acrobatics / training mode
 swarm_mode — multi-drone swarm operations
 Поддержка PX4 / ArduPilot / MAVLink (через адаптеры) и интеграция с AutopilotAgent / PilotAgent из Hybrid/Core.
 
-🌍 Geodesy & 3D Suite / Геодезия и 3D-комплекс
+# 🌍 Geodesy & 3D Suite / Геодезия и 3D-комплекс
 
 Модуль geodesy_suite — флагманский блок для:
 
@@ -84,7 +84,7 @@ NDVI, NDRE, растительность
 реки/гидравлика
 UI для этого модуля реализован в WebKurierCore (панель геодезиста), а WebKurierDroneHybrid отвечает за backend и расчёты.
 
-🛰 GeoViz3D Engine / Движок GeoViz3D
+# 🛰 GeoViz3D Engine / Движок GeoViz3D
 
 GeoViz3D — это 3D/4D движок визуализации рельефа и исторических данных, работающий как backend в DroneHybrid.
 
@@ -102,7 +102,7 @@ GeoViz3D — это 3D/4D движок визуализации рельефа �
 Подготовка данных для фронтенда (WebKurierCore: React + Three.js).
 Тип миссии: geoviz_analysis (см. ниже).
 
-🔋 Power & Telemetry / Питание и телеметрия
+# 🔋 Power & Telemetry / Питание и телеметрия
 
 Поддержка:
 тросового питания (tether mode)
@@ -112,7 +112,7 @@ GeoViz3D — это 3D/4D движок визуализации рельефа �
 логирование полётных параметров
 логирование энергорасхода
 экспорт логов в WebKurierHybrid и WebKurierChain
-🔗 Integration with Hybrid / Интеграция с Hybrid
+# 🔗 Integration with Hybrid / Интеграция с Hybrid
 
 WebKurierDroneHybrid тесно интегрирован с:
 
@@ -127,7 +127,7 @@ WebKurierChain:
 хранение ключевых результатов и хэшей отчётов
 WebKurierSecurity:
 проверка файлов и скриптов на угрозы
-🗂 Repository Structure / Структура репозитория
+# 🗂 Repository Structure / Структура репозитория
 WebKurierDroneHybrid/
 ├── engine/
 │   ├── autopilot/
@@ -211,7 +211,7 @@ WebKurierDroneHybrid/
 
 ⸻
 
-📡 Mission Types / Типы миссий
+# 📡 Mission Types / Типы миссий
 
 Photogrammetry / Фотограмметрия
 
@@ -272,7 +272,7 @@ GeoViz Analysis / Анализ GeoViz (geoviz_analysis)
 
 ⸻
 
-🐳 Docker
+# 🐳 Docker
 
 Minimal example:
 
@@ -291,7 +291,7 @@ services:
 
 ⸻
 
-🧪 CI / Continuous Integration
+# 🧪 CI / Continuous Integration
 
 ./.github/workflows/ci-dronehybrid.yml включает:
 	•	Линтинг Python (ruff/flake8 + black)
@@ -302,7 +302,7 @@ services:
 
 ⸻
 
-📜 License / Лицензия
+# 📜 License / Лицензия
 
 © 2025 VLADOEXPORT · WebKurierDroneHybrid
 Created by Vladyslav Hushchyn · All Rights Reserved
