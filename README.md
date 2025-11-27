@@ -24,7 +24,7 @@ WebKurierHybrid — performs cross-system analysis and orchestration:
 temporal comparisons across missions,
 unified reports (drone + chain + business),
 AI-driven insights via ExpertAgent.
-🇷🇺 Обзор
+# 🇷🇺 Обзор
 WebKurierDroneHybrid — основной бэкенд для дронов и геодезии в экосистеме WebKurier.
 Он отвечает за:
 
