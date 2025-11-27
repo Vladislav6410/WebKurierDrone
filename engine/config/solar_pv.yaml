@@ -1,0 +1,47 @@
+# Rooftop and field solar PV planning parameters
+# Параметры раскладки панелей и моделирования теней
+
+project:
+  module_name_en: "PVPlanner"
+  module_name_ru: "Планировщик солнечных панелей"
+  region: "global"   # лимиты и коррекция уже в доменных зонах DroneHybrid
+
+panels:
+  - name_en: "Standard 400W Panel"
+    name_ru: "Стандартная панель 400W"
+    size_m: [1.00, 1.25]       # 1.00m × 1.25m
+    power_w: 400
+    weight_kg: 21
+  - name_en: "Compact 150W Panel"
+    name_ru: "Компактная панель 150W"
+    size_m: [0.50, 1.00]       # 0.5m × 1.0m
+    power_w: 150
+    weight_kg: 8.2
+
+overlap_rules:
+  min_spacing_rows_m: 2.5   # минимальный шаг между рядами на ферме
+  fire_access_strip_m: 1.2  # полоса доступа на крыше к сервисным проходам
+
+shadows:
+  simulator: "seasonal_solar_path"  # модель симуляции Sun по сезонам
+  seasons:
+    winter:
+      sun_angle_min_deg: 9
+      block_rows_if_shade_overlap: true
+    spring:
+      sun_angle_min_deg: 25
+      block_rows_if_shade_overlap: false
+    summer:
+      sun_angle_min_deg: 55
+      block_rows_if_shade_overlap: false
+    autumn:
+      sun_angle_min_deg: 28
+      block_rows_if_shade_overlap: false
+
+output:
+  rooftop_planes_export: true     # экспорт planes
+  field_layout_export: true       # экспорт field
+  format:
+    - "pdf_report"
+    - "3d_scene_glb"
+    - "config_json"
