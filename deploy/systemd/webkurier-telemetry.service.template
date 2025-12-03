@@ -1,0 +1,28 @@
+[Unit]
+Description=WebKurier Drone Telemetry Bridge (MAVLink -> UDP/4G)
+After=network-online.target
+Wants=network-online.target
+
+# Если есть отдельный сервис модема/ppp, можно добавить:
+# After=modem-manager.service
+# Wants=modem-manager.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/webkurier/telemetry
+
+# Вариант на Python, если у тебя venv:
+# ExecStart=/usr/bin/env python3 telemetry_bridge.py --config config.yaml
+ExecStart=/usr/bin/python3 /opt/webkurier/telemetry/telemetry_bridge.py --config /opt/webkurier/telemetry/config.yaml
+
+Restart=on-failure
+RestartSec=5
+
+# Немного ограничения ресурсов (по вкусу)
+Nice=-5
+# Можно добавить LimitNOFILE=4096 и т.п.
+
+[Install]
+WantedBy=multi-user.target
